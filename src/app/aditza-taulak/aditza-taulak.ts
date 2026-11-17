@@ -15,32 +15,33 @@ export class AditzaTaulak {
   listaTrinkoakCompleta: Trinkoa[] = [];
   listaAuxiliarrakCompleta: any[] = [];
   todosAditzak: any[] = [];
+
+  norPertsonak: string[] = [];
+  norkPertsonak: string[] = [];
+  aditzaActual : Trinkoa[] | NorNork[] | any[] = []  ;
+
+  objecktuak = ["singularra", "plurala"];
+  denborak = ["orainaldia", "lehenaldia"];
+  ordenAlternativo = false;
+  ocultarHi = false;
+
   constructor(public readonly serviceHiztegia: ServiceHiztegia) {
-    this.serviceHiztegia = serviceHiztegia;
     this.listaTrinkoakCompleta = [...serviceHiztegia.trinkoak()];
     this.listaAuxiliarrakCompleta = [...serviceHiztegia.auxiliarrak()];
     this.todosAditzak = [...this.listaTrinkoakCompleta, ...this.listaAuxiliarrakCompleta];
     console.log("Todos los aditzak:", this.todosAditzak);
+
+    this.cambiarOrden(this.ordenAlternativo);
   }
-
-  objecktuak = ["singularra", "plurala"];
-  denborak = ["orainaldia", "lehenaldia"];
-  ordenNor1 = ["ni", "hi", "hura", "gu", "zu", "zuek", "haiek"];
-  ordenNor2 = ["ni", "zu", "hi", "hura", "gu", "zuek", "haiek"];
-  ordenNork1 = ["nik", "hik", "hark", "guk", "zuk", "zuek", "haiek"];
-  ordenNork2 = ["nik", "zuk", "hik", "hark", "guk", "zuek", "haiek"];
-  norPertsonak = this.ordenNor1;
-  norkPertsonak = this.ordenNork1;
-  ordenAlternativo = false;
-  ocultarHi = false;
-
-  aditzaActual : Trinkoa[] | NorNork[] | any[] = []  ;
 
   cambiarOrden(ordenAlternativo: boolean): void {
     this.ordenAlternativo = ordenAlternativo;
-    this.norPertsonak = ordenAlternativo ? this.ordenNor2 : this.ordenNor1;
-    this.norkPertsonak = ordenAlternativo ? this.ordenNork2 : this.ordenNork1;
+    this.norPertsonak = ordenAlternativo ? this.serviceHiztegia.ordenNor2() : this.serviceHiztegia.ordenNor1();
+    this.norkPertsonak = ordenAlternativo ? this.serviceHiztegia.ordenNork2() : this.serviceHiztegia.ordenNork1();
+    
   }
+
+
 
   obtenerAditzaTrinkoa(aditza: string): void {
     this.aditzaActual =  this.serviceHiztegia.trinkoak().filter((item) => item.aditza === aditza);

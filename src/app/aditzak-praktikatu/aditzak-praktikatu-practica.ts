@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NorNork, Trinkoa } from '../hiztegia';
 import type { Aditza } from './aditzak-praktikatu';
+import { ServiceHiztegia } from '../hiztegiService';
 
 @Component({
   imports: [FormsModule],
@@ -9,12 +10,15 @@ import type { Aditza } from './aditzak-praktikatu';
   templateUrl: './aditzak-praktikatu-practica.html',
 })
 export class AditzakPraktikatuPractica implements OnInit {
+  @ViewChild('primerInput') primerInput?: ElementRef<HTMLInputElement>;
   @Input() aditzak: Aditza[] = [];
   @Input() usarGauzak: boolean = true;
+  @Input() practicarDeclinacion: boolean = true;
   @Output() reset = new EventEmitter<void>();
 
   aditzakPendientes: Aditza[] = [];
   modoGauzak: boolean = true;
+  adivinarPronombres: boolean = true;
   palabraSeleccionada: Aditza = { konjugaioa: '', aditza: '', denbora: '', pertsona: '' };
   modo = '';
   verboNorNork = '';
@@ -23,6 +27,7 @@ export class AditzakPraktikatuPractica implements OnInit {
   palabraIntroducida = '';
   fraseAAcertar: string[] = [''];
   textoAcierto = '';
+  pronombreAPracticar = '';
   classTextoAcierto = 'text-center';
   readonly verbosNorNork = ['gonbidatu', 'maite', 'ikusi', 'izendatu', 'ikastera animatu'];
   readonly gauzakPoseerSingular = ['buruko mina', 'etxe handi bat', 'telefonoa', 'denbora asko', 'arazo bat'];
@@ -32,13 +37,17 @@ export class AditzakPraktikatuPractica implements OnInit {
   readonly gauzakSaberSingular = ['erantzuna', 'euskara', 'sekretua', 'kanta hori', 'egia'];
   readonly gauzakSaberPlural = ['abezti guztiak', 'hitz asko', 'hiru hizkuntza', 'istorio asko', 'lagunen izenak', 'aditz hauek', 'euskal kantu asko', 'hitz berriak', 'galdera guztien erantzunak', 'aditz hauek'];
 
+  constructor(public readonly serviceHiztegia: ServiceHiztegia) {}
+
   ngOnInit(): void {
     this.aditzakPendientes = [...this.aditzak];
     this.modoGauzak = this.usarGauzak;
+    this.adivinarPronombres = this.practicarDeclinacion;
     this.sacarPalabra();
   }
 
   sacarPalabra(): void {
+    
     if (this.aditzakPendientes.length === 0) {
       return;
     }
@@ -57,21 +66,32 @@ export class AditzakPraktikatuPractica implements OnInit {
     this.textoAcierto = '';
     this.classTextoAcierto = 'text-center';
     this.acertado = false;
-    this.palabraIntroducida = '';
     this.fraseAAcertar = [];
-    this.textoAMostrar();
+     this.textoAMostrar();
+    this.vaciarAmbos();
+    this.enfocarInput(); 
 
   }
 
   textoAMostrar() {
+    console.log(this.adivinarPronombres);
     if (this.modo === 'trikoa') {
       // Si se ha seleccionado usar gauzak
+      if(!this.adivinarPronombres && 'pertsona' in this.palabraSeleccionada){
+        this.fraseAAcertar[0] = this.palabraSeleccionada.pertsona;
+      }else if('pertsona' in this.palabraSeleccionada){
+        const indice = this.serviceHiztegia.ordenNork1().indexOf(this.palabraSeleccionada.pertsona)
+        this.fraseAAcertar[0] = "(" ;
+        this.fraseAAcertar[0] += this.serviceHiztegia.ordenNor1()[indice] 
+        this.fraseAAcertar[0] += ")";
+        
+      }
       if ('objektu' in this.palabraSeleccionada && this.palabraSeleccionada.objektu) {
         if (this.modoGauzak) {
           if (this.palabraSeleccionada.objektu === 'singularra') {
-            this.fraseAAcertar[0] = this.palabraSeleccionada.pertsona + " gauza bat";
+            this.fraseAAcertar[1] = " gauza bat";
           } else {
-            this.fraseAAcertar[0] = this.palabraSeleccionada.pertsona + " bi gauza ";
+            this.fraseAAcertar[1] = " bi gauza ";
           }
         }
         // Si se ha seleccionado no usar gauzak
@@ -80,49 +100,51 @@ export class AditzakPraktikatuPractica implements OnInit {
           if (this.palabraSeleccionada.aditza === 'eduki' || this.palabraSeleccionada.aditza === 'ukan') {
             if (this.palabraSeleccionada.objektu === 'singularra') {
               var objektuIndice = Math.trunc(Math.random() * this.gauzakPoseerSingular.length);
-              this.fraseAAcertar[0] = this.palabraSeleccionada.pertsona + " " + this.gauzakPoseerSingular[objektuIndice];
+              this.fraseAAcertar[1] = " " + this.gauzakPoseerSingular[objektuIndice];
             } else {
               var objektuIndice = Math.trunc(Math.random() * this.gauzakPoseerPlural.length);
-              this.fraseAAcertar[0] = this.palabraSeleccionada.pertsona + " " + this.gauzakPoseerPlural[objektuIndice];
+              this.fraseAAcertar[1] = " " + this.gauzakPoseerPlural[objektuIndice];
             }
           } 
           // Para los verbos eraman eta ekarri se utilizan los gauzakLlevarSingular y Plural
           else if (this.palabraSeleccionada.aditza === 'eraman' || this.palabraSeleccionada.aditza === 'ekarri')
             if (this.palabraSeleccionada.objektu === 'singularra') {
               var objektuIndice = Math.trunc(Math.random() * this.gauzakLlevarSingular.length);
-              this.fraseAAcertar[0] = this.palabraSeleccionada.pertsona + " " + this.gauzakLlevarSingular[objektuIndice];
+              this.fraseAAcertar[1] = " " + this.gauzakLlevarSingular[objektuIndice];
             } else {
               var objektuIndice = Math.trunc(Math.random() * this.gauzakLlevarPlural.length);
-              this.fraseAAcertar[0] = this.palabraSeleccionada.pertsona + " " + this.gauzakLlevarPlural[objektuIndice];
+              this.fraseAAcertar[1] = " " + this.gauzakLlevarPlural[objektuIndice];
             } 
           // Para el verbo Jakin se utilizan los gauzakSaberSingular y Plural
             else if (this.palabraSeleccionada.aditza === 'jakin')
             if (this.palabraSeleccionada.objektu === 'singularra') {
               var objektuIndice = Math.trunc(Math.random() * this.gauzakSaberSingular.length);
-              this.fraseAAcertar[0] = this.palabraSeleccionada.pertsona + " " + this.gauzakSaberSingular[objektuIndice];
+              this.fraseAAcertar[1] = " " + this.gauzakSaberSingular[objektuIndice];
             } else {
               var objektuIndice = Math.trunc(Math.random() * this.gauzakSaberPlural.length);
-              this.fraseAAcertar[0] = this.palabraSeleccionada.pertsona + " " + this.gauzakSaberPlural[objektuIndice];
+              this.fraseAAcertar[1] = " " + this.gauzakSaberPlural[objektuIndice];
             }
         }
 
 
       } else if ('pertsona' in this.palabraSeleccionada) {
         this.fraseAAcertar[0] = this.palabraSeleccionada.pertsona;
-        this.fraseAAcertar[1] = this.palabraSeleccionada.aditza;
+        this.fraseAAcertar[1] = "";
+        this.fraseAAcertar[2] = this.palabraSeleccionada.aditza;
 
       }
-      this.fraseAAcertar[1] = "(" + this.palabraSeleccionada.aditza + ")";
-      this.fraseAAcertar[2] = "\n(" + this.palabraSeleccionada.denbora + ")";
+      this.fraseAAcertar[2] = "(" + this.palabraSeleccionada.aditza + ")";
+      this.fraseAAcertar[3] = "\n(" + this.palabraSeleccionada.denbora + ")";
     } else if (this.modo === 'norNork' && 'nor' in this.palabraSeleccionada && 'nork' in this.palabraSeleccionada) {
-      this.fraseAAcertar[0] = this.palabraSeleccionada.nork + " " + this.palabraSeleccionada.nor + " " + this.verboNorNork;
-      this.fraseAAcertar[1] = "";
+      this.fraseAAcertar[0] = this.palabraSeleccionada.nork + " " + this.palabraSeleccionada.nor;
+      this.fraseAAcertar[1] = " ";
+      this.fraseAAcertar[2] = this.verboNorNork;
     }
 
     if (this.modo === 'trikoa') {
-      this.fraseAAcertar[2] = "(" + this.palabraSeleccionada.denbora + ")";
+      this.fraseAAcertar[3] = "(" + this.palabraSeleccionada.denbora + ")";
     } else if (this.modo === 'norNork' && 'nor' in this.palabraSeleccionada && 'nork' in this.palabraSeleccionada) {
-      this.fraseAAcertar[2] = "(" + this.palabraSeleccionada.denbora + ")" + "(" + this.palabraSeleccionada.modua + ")";
+      this.fraseAAcertar[3] = "(" + this.palabraSeleccionada.denbora + ")" + "(" + this.palabraSeleccionada.modua + ")";
     }
   }
 
@@ -130,10 +152,17 @@ export class AditzakPraktikatuPractica implements OnInit {
     if (this.intentos <= 0) {
       return;
     }
-
+    var pronombreAcerdado = true;
     this.acertado = this.palabraIntroducida.trim().toLowerCase() ===
       this.palabraSeleccionada.konjugaioa.toLowerCase();
-    if (this.acertado) {
+
+      // el pronombre declinado solo se pide para los trinkos transitivos si el modo está activado
+    if(this.practicarDeclinacion && 'objektu' in this.palabraSeleccionada && 'pertsona' in this.palabraSeleccionada){
+          pronombreAcerdado = this.pronombreAPracticar.trim().toLowerCase() ===
+      this.palabraSeleccionada.pertsona.toLowerCase();
+      
+    }
+    if (this.acertado && pronombreAcerdado) {
       this.textoAcierto = '<strong>Oso ondo!</strong><br>';
       this.classTextoAcierto = 'text-center text-success fw-bold fs-2';
       this.aditzakPendientes.splice(this.aditzakPendientes.indexOf(this.palabraSeleccionada), 1);
@@ -148,5 +177,27 @@ export class AditzakPraktikatuPractica implements OnInit {
     this.textoAcierto = this.intentos > 0 ? 'Intentalo de nuevo' : '';
     this.textoAcierto += `<br>Intentos restantes: ${this.intentos}`;
     this.classTextoAcierto = 'text-center text-info';
+  }
+
+  vaciarAmbos(){
+    this.pronombreAPracticar = '';
+    this.palabraIntroducida = '';
+    this.enfocarInput();
+  }
+
+  @HostListener('document:keydown.enter', ['$event'])
+  onEnterKey(event: Event): void {
+    // Se ejecuta solo cuando NO está el formulario de "Saiatu" (acertado o sin intentos)
+    // y todavía quedan palabras por practicar
+    if ((this.acertado || this.intentos === 0) && this.aditzakPendientes.length > 0) {
+      event.preventDefault(); // Evita comportamientos por defecto del navegador
+      this.sacarPalabra();
+    }
+  }
+  private enfocarInput(): void {
+    // El setTimeout(0) espera a que Angular termine de renderizar el @if en el HTML
+    setTimeout(() => {
+      this.primerInput?.nativeElement.focus();
+    }, 0);
   }
 }

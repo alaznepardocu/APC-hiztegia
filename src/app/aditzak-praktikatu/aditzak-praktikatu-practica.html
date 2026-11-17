@@ -1,26 +1,56 @@
 <div class="card p-3">
     <p class="fs-2 text-center pb-2">
-    {{this.fraseAAcertar[0]}} 
     @if(!acertado){
+        {{this.fraseAAcertar[0]}} 
+        @if(practicarDeclinacion && 'objektu' in this.palabraSeleccionada){
+            ______
+        }   
+        {{this.fraseAAcertar[1]}}
         __________
+        {{this.fraseAAcertar[2]}} 
+        <br>{{this.fraseAAcertar[3]}} 
     }
-    @else(){
-        <b class="text-success">{{this.palabraSeleccionada.konjugaioa}}</b>
+    @else{
+        {{this.fraseAAcertar[0]}} 
+        @if (practicarDeclinacion && 'objektu' in this.palabraSeleccionada && 'pertsona' in this.palabraSeleccionada){
+        <strong class="text-center text-success fs-2">
+           {{this.palabraSeleccionada.pertsona}}</strong>
+        }   
+        {{this.fraseAAcertar[1]}}
+        <strong class="text-center text-success fs-2">{{this.palabraSeleccionada.konjugaioa}}</strong>
+        {{this.fraseAAcertar[2]}} 
+        <br>{{this.fraseAAcertar[3]}} 
+    
     }
-    <br>{{this.fraseAAcertar[1]}} 
-    {{this.fraseAAcertar[2]}} 
+
     </p>
     @if (intentos > 0 && !acertado) {
+    @if(practicarDeclinacion && 'objektu' in this.palabraSeleccionada && 'pertsona' in this.palabraSeleccionada){
         <form class="input-group mb-3 w-100" (ngSubmit)="probar()">
-            <input type="text" class="form-control" name="erderaz" placeholder="aditza"
+            <input #primerInput type="text" class="form-control" name="izenordain" placeholder="izenordain"
+                [(ngModel)]="pronombreAPracticar">
+            <input type="text" class="form-control" name="aditza" placeholder="aditza"
+                [(ngModel)]="palabraIntroducida">
+            <button class="btn btn-warning" type="submit">Saiatu</button>
+            <button class="btn btn-outline-secondary" type="button" (click)="vaciarAmbos()">X</button>
+        </form>
+    }
+    @else {
+        <form class="input-group mb-3 w-100" (ngSubmit)="probar()">
+            <input #primerInput type="text" class="form-control" name="aditza" placeholder="aditza"
                 [(ngModel)]="palabraIntroducida">
             <button class="btn btn-warning" type="submit">Saiatu</button>
             <button class="btn btn-outline-secondary" type="button" (click)="palabraIntroducida = ''">X</button>
         </form>
     }
+
+}
     <p [class]="classTextoAcierto" [innerHTML]="textoAcierto"></p>
     @if (intentos === 0) {
         <p class="fs-4 text-center">La solución era:<br>
+            @if(practicarDeclinacion && 'pertsona' in this.palabraSeleccionada){
+            <b>{{this.palabraSeleccionada.pertsona}}</b><br>
+            }
             <b>{{this.palabraSeleccionada.konjugaioa}}</b></p>
     }
 </div>

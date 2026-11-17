@@ -22,7 +22,7 @@
 
     @if (intentos > 0 && !acertado) {
         <form class="input-group mb-3 w-100" (ngSubmit)="probar()">
-            <input type="text" class="form-control" name="erderaz" placeholder="hitz"
+            <input #primerInput type="text" class="form-control" name="erderaz" placeholder="hitz"
                 [(ngModel)]="palabraIntroducida">
             <button class="btn btn-warning" type="submit">Saiatu</button>
             <button class="btn btn-outline-secondary" type="button"

@@ -21,7 +21,8 @@ export class AditzakPraktikatuFiltros {
   aditzakAEstudiar: Aditza[] = [];
   ocultarHi = false;
   usarGauzak = true;
-  @Output() empezar = new EventEmitter<{ aditzak: Aditza[]; usarGauzak: boolean }>();
+  practicarDeclinacion = false;
+  @Output() empezar = new EventEmitter<{ aditzak: Aditza[]; usarGauzak: boolean; practicarDeclinacion: boolean }>();
 
   constructor(public readonly serviceHiztegia: ServiceHiztegia) {}
 
@@ -88,6 +89,11 @@ export class AditzakPraktikatuFiltros {
     this.filtrar();
   }
 
+  cambiarPracticarDeclinacion(isChecked: boolean): void {
+    this.practicarDeclinacion = isChecked;
+    this.filtrar();
+  }
+
   cambiarOcultarHi(isChecked: boolean): void {
     this.ocultarHi = isChecked;
     this.filtrar();
@@ -124,6 +130,7 @@ export class AditzakPraktikatuFiltros {
       this.empezar.emit({
         aditzak: [...this.aditzakAEstudiar],
         usarGauzak: this.usarGauzak,
+        practicarDeclinacion: this.practicarDeclinacion
       });
     }
   }

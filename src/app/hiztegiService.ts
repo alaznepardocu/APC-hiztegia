@@ -31,6 +31,10 @@ export class ServiceHiztegia {
     auxiliarrakDisponibles = signal<string[]>(['nor-nork']);
     laguntzaileakDenborak = signal<string[]>([]);
     laguntzaileakModuak = signal<string[]>([]);
+    ordenNor1 = signal<string[]>(["ni", "hi", "hura", "gu", "zu", "zuek", "haiek"]);
+    ordenNor2 = signal<string[]>(["ni", "zu", "hi", "hura", "gu", "zuek", "haiek"]);
+    ordenNork1 = signal<string[]>(["nik", "hik", "hark", "guk", "zuk", "zuek", "haiek"]);
+    ordenNork2 = signal<string[]>(["nik", "zuk", "hik", "hark", "guk", "zuek", "haiek"]);
 
     // ---- Estado de carga
     cargado = signal(false);

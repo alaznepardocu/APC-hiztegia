@@ -16,6 +16,7 @@ export class AditzakPraktikatu {
   readonly pantalla = signal<'cargando' | 'filtros' | 'practicando'>('cargando');
   aditzakAEstudiar: Aditza[] = [];
   usarGauzak: boolean = true;
+  practicarDeclinacion: boolean = true;
 
   constructor(public readonly serviceHiztegia: ServiceHiztegia) {
     effect(() => {
@@ -27,9 +28,10 @@ export class AditzakPraktikatu {
     });
   }
 
-  empezar(datos: { aditzak: Aditza[]; usarGauzak: boolean }): void {
+  empezar(datos: { aditzak: Aditza[]; usarGauzak: boolean; practicarDeclinacion: boolean }): void {
     this.aditzakAEstudiar = datos.aditzak;
     this.usarGauzak = datos.usarGauzak;
+    this.practicarDeclinacion = datos.practicarDeclinacion;
     this.pantalla.set('practicando');
   }
 

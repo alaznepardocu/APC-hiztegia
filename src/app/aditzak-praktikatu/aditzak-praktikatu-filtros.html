@@ -122,9 +122,19 @@
         <div class="col">
             <div
                 class="form-check w-auto d-flex align-items-center justify-content-center border rounded gap-2 p-2 ml-4">
-                <input class="form-check-input m-0 flex-shrink-0" type="checkbox" id="ocultarHi" [checked]="usarGauzak"
+                <input class="form-check-input m-0 flex-shrink-0" type="checkbox" id="usarGauzak" [checked]="usarGauzak"
                     (change)="cambiarUsarGauzak($event.target.checked)">
-                <label class="form-check-label text-center" for="ocultarHi">Usar "Gauzak" en los transitivos</label>
+                <label class="form-check-label text-center" for="usarGauzak">Usar "Gauzak" en los transitivos</label>
+            </div>
+        </div>
+    </div>
+    <div class="row row-cols-1 g-3 py-2 align-center justify-content-center">
+        <div class="col">
+            <div
+                class="form-check w-auto d-flex align-items-center justify-content-center border rounded gap-2 p-2 ml-4">
+                <input class="form-check-input m-0 flex-shrink-0" type="checkbox" id="practicarDeclinacion" [checked]="practicarDeclinacion"
+                    (change)="cambiarPracticarDeclinacion($event.target.checked)">
+                <label class="form-check-label text-center" for="practicarDeclinacion">Practicar declinación de pronombres en transitivos</label>
             </div>
         </div>
     </div>

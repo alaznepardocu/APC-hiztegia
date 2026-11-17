@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Hitz } from '../hiztegia';
 import { esCorrecta } from '../utilidades';
@@ -11,6 +11,7 @@ const palabraVacia = (): Hitz => ({ eu: '', es: [], maila: '', ikasturtea: 0, da
   templateUrl: './hiztegia-praktikatu-practica.html',
 })
 export class HiztegiaPraktikatuPractica implements OnInit {
+  @ViewChild('primerInput') primerInput?: ElementRef<HTMLInputElement>;
   @Input() modo = 'Euskara';
   @Input() palabrasAEstudiar: Hitz[] = [];
   palabraSeleccionada: Hitz = palabraVacia();
@@ -29,37 +30,34 @@ export class HiztegiaPraktikatuPractica implements OnInit {
     this.sacarPalabra();
   }
 
-  /** Lo que se enseña como solución cuando se agotan los intentos. */
   get respuestaVisible(): string {
     const p = this.palabraSeleccionada;
-    var respuesta = "";
-    if(this.modo === 'Euskara'){
+    let respuesta = '';
+    if (this.modo === 'Euskara') {
       respuesta = p.es.join(' / ');
-      if(p.notaes){
-        respuesta += " (" + p.notaes + ")";
+      if (p.notaes) {
+        respuesta += ' (' + p.notaes + ')';
       }
-    }
-    else{
-      respuesta = [p.eu, ...(p.eu_alt ?? [])].join(' / ')
-      if(p.notaeu){
-        respuesta += " (" + p.notaeu + ")";
+    } else {
+      respuesta = [p.eu, ...(p.eu_alt ?? [])].join(' / ');
+      if (p.notaeu) {
+        respuesta += ' (' + p.notaeu + ')';
       }
     }
     return respuesta.toLowerCase();
   }
 
-  /** Lo que se enseña como solución cuando se acierta la palabra. */
   get respuestaTotal(): string {
     const p = this.palabraSeleccionada;
-    var respuesta = "";
-    respuesta += [p.eu, ...(p.eu_alt ?? [])].join(' / ')
-    if(p.notaeu){
-      respuesta += " (" + p.notaeu + ")";
+    let respuesta = '';
+    respuesta += [p.eu, ...(p.eu_alt ?? [])].join(' / ');
+    if (p.notaeu) {
+      respuesta += ' (' + p.notaeu + ')';
     }
-    respuesta += " = "
+    respuesta += ' = ';
     respuesta += p.es.join(' / ');
-    if(p.notaes){
-      respuesta += " (" + p.notaes + ")";
+    if (p.notaes) {
+      respuesta += ' (' + p.notaes + ')';
     }
     return respuesta.toLowerCase();
   }
@@ -76,15 +74,14 @@ export class HiztegiaPraktikatuPractica implements OnInit {
     this.acertado = false;
     this.palabraIntroducida = '';
     this.solucion = '';
+    this.enfocarInput();
   }
 
   public probar(): void {
-    if (this.intentos <= 0) {
+    if (this.intentos <= 0 || this.acertado) {
       return;
     }
 
-    // Euskara -> vale CUALQUIERA de los significados en castellano.
-    // Gaztelaina -> vale la palabra en euskera o cualquiera de sus variantes.
     const aceptadas = this.modo === 'Euskara'
       ? this.palabraSeleccionada.es
       : [this.palabraSeleccionada.eu, ...(this.palabraSeleccionada.eu_alt ?? [])];
@@ -96,7 +93,7 @@ export class HiztegiaPraktikatuPractica implements OnInit {
       this.classTextoAcierto = 'text-center text-success fw-bold fs-2';
       this.palabrasAEstudiar.splice(this.palabrasAEstudiar.indexOf(this.palabraSeleccionada), 1);
       this.palabraIntroducida = '';
-      this.palabraSeleccionada = palabraVacia();
+      // No vaciamos palabraSeleccionada aquí para que no desaparezca el enunciado de arriba al acertar
       if (this.palabrasAEstudiar.length === 0) {
         this.textoAcierto = 'Zorionak!<br> Has adivinado todas las palabras.';
       }
@@ -108,4 +105,24 @@ export class HiztegiaPraktikatuPractica implements OnInit {
     this.textoAcierto += `<br>Intentos restantes: ${this.intentos}`;
     this.classTextoAcierto = 'text-center text-info';
   }
+
+  public enfocarInput(): void {
+    setTimeout(() => {
+      this.primerInput?.nativeElement.focus();
+    }, 0);
+  }
+
+  @HostListener('document:keydown.enter', ['$event'])
+  onEnterKey(event: Event): void {
+    const target = event.target as HTMLElement | null;
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'BUTTON')) {
+      return;
+    }
+
+    if ((this.acertado || this.intentos === 0) && this.palabrasAEstudiar.length > 0) {
+      event.preventDefault();
+      this.sacarPalabra();
+    }
+  }
+
 }
