@@ -4,6 +4,7 @@ import { ServiceHiztegia } from './hiztegiService';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { Component } from '@angular/core';
 import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
+import { VERSION } from './version';
 
 @Component({
   imports: [CommonModule, RouterOutlet, RouterLink, NgbCollapseModule],
@@ -12,6 +13,7 @@ import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
   templateUrl: './app.html',
 })
 export class App {
+  readonly version = VERSION;
   constructor(private hiztegiService: ServiceHiztegia) { }
   isCollapsed = true;
 
