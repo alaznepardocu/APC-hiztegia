@@ -6,7 +6,9 @@
     "ng": "ng",
     "start": "ng serve",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "prestart": "node scripts/generar-version.mjs",
+    "prebuild": "node scripts/generar-version.mjs"
   },
   "private": true,
   "packageManager": "npm@11.19.0",
