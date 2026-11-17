@@ -77,7 +77,7 @@ export class AditzaTaulak {
       if(denbora === "orainaldia"){
         const nor : NorItem[] = ([
             { nor: 'NI',    konjugazioa: 'nau'},
-            { nor: 'HI',    konjugazioa: 'ha'},
+            { nor: 'HI',    konjugazioa: 'hau'},
             { nor: 'HURA',  konjugazioa: 'du'},
             { nor: 'GU',    konjugazioa: 'gaitu'},
             { nor: 'ZU',    konjugazioa: 'zaitu'},
@@ -92,7 +92,7 @@ export class AditzaTaulak {
             { nork: 'GUK',    konjugazioa: 'gu'},
             { nork: 'ZUK',    konjugazioa: 'zu'},
             { nork: 'ZUEK',  konjugazioa: 'zue'},
-            { nork: 'HAIEK', konjugazioa: 'te'},
+            { nork: 'HAIEK', konjugazioa: '(*z)te'},
           ]);
     if (norEdoNork === 'nor') {
       const encontrado = nor.find(item => item.nor === pertsona.toUpperCase());
