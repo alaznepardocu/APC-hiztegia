@@ -43,3 +43,11 @@ export interface AditzaFila {
     objektu: 'singularra' | 'plurala' | null,
     konjugaioa: string
 }
+
+export interface AditzGehigarria {
+    id: string,
+    grupo: string,
+    aditzak: string[],        // verbos a los que se aplica: ['eduki', 'ukan']
+    objektu: 'singularra' | 'plurala' | null,
+    texto: string
+}

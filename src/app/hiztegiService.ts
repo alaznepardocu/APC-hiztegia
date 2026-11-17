@@ -1,5 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { AditzaFila, Hitz, NorNork, NuevaHitz, Trinkoa } from './hiztegia';
+import { AditzaFila, Hitz, NorNork, NuevaHitz, Trinkoa, AditzGehigarria } from './hiztegia';
 import { supabase } from './supabase';
 import { etiquetaIkasturtea } from './utilidades';
 
@@ -12,6 +12,13 @@ export class ServiceHiztegia {
     niveles = signal<string[]>(['Todos']);        // A1, A2... (antes "cursos")
     ikasturteak = signal<string[]>(['Todos']);    // '2026-27'...
     fechas = signal<string[]>(['Todos']);         // fechas ISO, la más reciente primero
+    gehigarriakFilas = signal<AditzGehigarria[]>([]);
+
+    gehigarriak(aditza: string, objektu: string | null = null): string[] {
+    return this.gehigarriakFilas()
+        .filter(f => f.aditzak.includes(aditza) && f.objektu === objektu)
+        .map(f => f.texto);
+}
 
     /** Etiqueta del curso más reciente que hay en los datos (o 'Todos' si aún no hay datos). */
     ikasturteaActual = computed(() => {
@@ -74,9 +81,10 @@ export class ServiceHiztegia {
     private async descargar(): Promise<void> {
         this.error.set(null);
         try {
-            const [palabras, aditzak] = await Promise.all([
+            const [palabras, aditzak, gehigarriak] = await Promise.all([
                 this.traerTodo<Hitz>('palabras'),
                 this.traerTodo<AditzaFila>('aditzak'),
+                this.traerTodo<AditzGehigarria>('aditz_gehigarriak'),
             ]);
 
             // Palabras
@@ -104,6 +112,7 @@ export class ServiceHiztegia {
             this.laguntzaileakDenborak.set(denboraAuxiliarrak);
             this.laguntzaileakModuak.set(moduakAuxiliarrak);
             this.auxiliarrakDisponibles.set(nombresAuxiliarrak);
+            this.gehigarriakFilas.set(gehigarriak);
 
             this.cargado.set(true);
         } catch (e) {
@@ -114,7 +123,7 @@ export class ServiceHiztegia {
     }
 
     /** La API devuelve como máximo 1000 filas por petición: se pide por páginas. */
-    private async traerTodo<T>(tabla: 'palabras' | 'aditzak'): Promise<T[]> {
+    private async traerTodo<T>(tabla: 'palabras' | 'aditzak' | 'aditz_gehigarriak'): Promise<T[]> {
         const filas: T[] = [];
         for (let desde = 0; ; desde += 1000) {
             const { data, error } = await supabase.from(tabla).select('*').order('id').range(desde, desde + 999);

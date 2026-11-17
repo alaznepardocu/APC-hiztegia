@@ -5,7 +5,8 @@
                 <p>Cargando Aditzak...</p>
             }
             @case ('filtros') {
-                <app-aditzak-praktikatu-filtros (empezar)="empezar($event)" />
+                <app-aditzak-praktikatu-filtros
+                    (empezar)="empezar({ aditzak: $event.aditzak, usarGauzak: $event.usarGauzak, practicarDeclinacion: $event.practicarDeclinacion })" />
             }
             @case ('practicando') {
                 <app-aditzak-praktikatu-practica

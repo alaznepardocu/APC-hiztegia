@@ -29,15 +29,19 @@ export class AditzakPraktikatuPractica implements OnInit {
   textoAcierto = '';
   pronombreAPracticar = '';
   classTextoAcierto = 'text-center';
-  readonly verbosNorNork = ['gonbidatu', 'maite', 'ikusi', 'izendatu', 'ikastera animatu'];
+  /* readonly verbosNorNork = ['gonbidatu', 'maite', 'ikusi', 'izendatu', 'ikastera animatu'];
   readonly gauzakPoseerSingular = ['buruko mina', 'etxe handi bat', 'telefonoa', 'denbora asko', 'arazo bat'];
   readonly gauzakPoseerPlural = ['hiru txakurra', 'lagun asko', 'galdera batzuk', 'giltza guztiak', 'liburu berriak'];
   readonly gauzakLlevarSingular = ['ogia', 'gutun bat', 'ura', 'tarta handi bat', 'kotxea', 'gazta asko', 'poltsa', 'maleta'];
   readonly gauzakLlevarPlural = ['liburuak', 'bi maleta', 'opariak', 'lagunak', 'umeak', 'loreak'];
   readonly gauzakSaberSingular = ['erantzuna', 'euskara', 'sekretua', 'kanta hori', 'egia'];
   readonly gauzakSaberPlural = ['abezti guztiak', 'hitz asko', 'hiru hizkuntza', 'istorio asko', 'lagunen izenak', 'aditz hauek', 'euskal kantu asko', 'hitz berriak', 'galdera guztien erantzunak', 'aditz hauek'];
-
+ */
   constructor(public readonly serviceHiztegia: ServiceHiztegia) {}
+
+  private ejemplos(aditza: string, objektu: 'singularra' | 'plurala' | null = null): string[] {
+    return this.serviceHiztegia.gehigarriak(aditza, objektu);
+  }
 
   ngOnInit(): void {
     this.aditzakPendientes = [...this.aditzak];
@@ -58,8 +62,8 @@ export class AditzakPraktikatuPractica implements OnInit {
       this.modo = 'trikoa';
     } else if ('nor' in this.palabraSeleccionada && 'nork' in this.palabraSeleccionada) {
       this.modo = 'norNork';
-      const verboIndice = Math.trunc(Math.random() * this.verbosNorNork.length);
-      this.verboNorNork = this.verbosNorNork[verboIndice];
+      const verboIndice = Math.trunc(Math.random() * this.ejemplos('nor-nork').length);
+      this.verboNorNork = this.ejemplos('nor-nork')[verboIndice];
     }
 
     this.intentos = 3;
@@ -96,33 +100,51 @@ export class AditzakPraktikatuPractica implements OnInit {
         }
         // Si se ha seleccionado no usar gauzak
         else {
-          // Para los verbos eduki eta ukan se utilizan los gauzakPoseerSingular y Plural
-          if (this.palabraSeleccionada.aditza === 'eduki' || this.palabraSeleccionada.aditza === 'ukan') {
+          // Para el verbo eduki
+          if (this.palabraSeleccionada.aditza === 'eduki') {
             if (this.palabraSeleccionada.objektu === 'singularra') {
-              var objektuIndice = Math.trunc(Math.random() * this.gauzakPoseerSingular.length);
-              this.fraseAAcertar[1] = " " + this.gauzakPoseerSingular[objektuIndice];
+              var objektuIndice = Math.trunc(Math.random() * this.ejemplos('eduki', 'singularra').length);
+              this.fraseAAcertar[1] = " " + this.ejemplos('eduki', 'singularra')[objektuIndice];
             } else {
-              var objektuIndice = Math.trunc(Math.random() * this.gauzakPoseerPlural.length);
-              this.fraseAAcertar[1] = " " + this.gauzakPoseerPlural[objektuIndice];
+              var objektuIndice = Math.trunc(Math.random() * this.ejemplos('eduki', 'plurala').length);
+              this.fraseAAcertar[1] = " " + this.ejemplos('eduki', 'plurala')[objektuIndice];
             }
           } 
-          // Para los verbos eraman eta ekarri se utilizan los gauzakLlevarSingular y Plural
-          else if (this.palabraSeleccionada.aditza === 'eraman' || this.palabraSeleccionada.aditza === 'ekarri')
+          // Para el verbo ukan
+          else if(this.palabraSeleccionada.aditza === 'ukan'){
             if (this.palabraSeleccionada.objektu === 'singularra') {
-              var objektuIndice = Math.trunc(Math.random() * this.gauzakLlevarSingular.length);
-              this.fraseAAcertar[1] = " " + this.gauzakLlevarSingular[objektuIndice];
+              var objektuIndice = Math.trunc(Math.random() * this.ejemplos('ukan', 'singularra').length);
+              this.fraseAAcertar[1] = " " + this.ejemplos('ukan', 'singularra')[objektuIndice];
             } else {
-              var objektuIndice = Math.trunc(Math.random() * this.gauzakLlevarPlural.length);
-              this.fraseAAcertar[1] = " " + this.gauzakLlevarPlural[objektuIndice];
+              var objektuIndice = Math.trunc(Math.random() * this.ejemplos('ukan', 'plurala').length);
+              this.fraseAAcertar[1] = " " + this.ejemplos('ukan', 'plurala')[objektuIndice];
+            }
+          }
+          // Para los verbos eraman eta ekarri se utilizan los gauzakLlevarSingular y Plural
+          else if (this.palabraSeleccionada.aditza === 'eraman')
+            if (this.palabraSeleccionada.objektu === 'singularra') {
+              var objektuIndice = Math.trunc(Math.random() * this.ejemplos('eraman', 'singularra').length);
+              this.fraseAAcertar[1] = " " + this.ejemplos('eraman', 'singularra')[objektuIndice];
+            } else {
+              var objektuIndice = Math.trunc(Math.random() * this.ejemplos('eraman', 'plurala').length);
+              this.fraseAAcertar[1] = " " + this.ejemplos('eraman', 'plurala')[objektuIndice];
+            } 
+          else if (this.palabraSeleccionada.aditza === 'ekarri')
+            if (this.palabraSeleccionada.objektu === 'singularra') {
+              var objektuIndice = Math.trunc(Math.random() * this.ejemplos('ekarri', 'singularra').length);
+              this.fraseAAcertar[1] = " " + this.ejemplos('ekarri', 'singularra')[objektuIndice];
+            } else {
+              var objektuIndice = Math.trunc(Math.random() * this.ejemplos('ekarri', 'plurala').length);
+              this.fraseAAcertar[1] = " " + this.ejemplos('ekarri', 'plurala')[objektuIndice];
             } 
           // Para el verbo Jakin se utilizan los gauzakSaberSingular y Plural
             else if (this.palabraSeleccionada.aditza === 'jakin')
             if (this.palabraSeleccionada.objektu === 'singularra') {
-              var objektuIndice = Math.trunc(Math.random() * this.gauzakSaberSingular.length);
-              this.fraseAAcertar[1] = " " + this.gauzakSaberSingular[objektuIndice];
+              var objektuIndice = Math.trunc(Math.random() * this.ejemplos('jakin', 'singularra').length);
+              this.fraseAAcertar[1] = " " + this.ejemplos('jakin', 'singularra')[objektuIndice];
             } else {
-              var objektuIndice = Math.trunc(Math.random() * this.gauzakSaberPlural.length);
-              this.fraseAAcertar[1] = " " + this.gauzakSaberPlural[objektuIndice];
+              var objektuIndice = Math.trunc(Math.random() * this.ejemplos('jakin', 'plurala').length);
+              this.fraseAAcertar[1] = " " + this.ejemplos('jakin', 'plurala')[objektuIndice];
             }
         }
 
