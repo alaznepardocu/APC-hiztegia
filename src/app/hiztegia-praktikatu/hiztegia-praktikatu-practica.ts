@@ -102,7 +102,7 @@ export class HiztegiaPraktikatuPractica implements OnInit {
 
     this.intentos--;
     this.textoAcierto = this.intentos > 0 ? 'Intentalo de nuevo' : '';
-    this.textoAcierto += `<br>Intentos restantes: ${this.intentos}`;
+    this.textoAcierto += this.intentos > 0 ? `<br>Intentos restantes: ${this.intentos}` : '';
     this.classTextoAcierto = 'text-center text-info';
   }
 
