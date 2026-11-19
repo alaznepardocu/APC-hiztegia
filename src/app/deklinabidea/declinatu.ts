@@ -12,8 +12,9 @@ export function declinar (raiz: string, kasua: Kasua, zenbakia: Zenbakia): strin
     if(raiz.charAt(raiz.length-1) === 'A'){
         raiz = raiz.slice(0,-1);
     }
+    const sufijo =  ATZIZKIAK[kasua][zenbakia];
 
-    return raiz + ATZIZKIAK[kasua,zenbakia];
+    return raiz + sufijo;
 
 
 }
