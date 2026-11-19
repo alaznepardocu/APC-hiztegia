@@ -1,5 +1,14 @@
 import assert from 'node:assert/strict';
-import { declinar } from '../src/app/deklinabidea/deklinatu.ts'
+import { deklinatu } from '../src/app/deklinabidea/deklinatu.ts'
 
-assert.equal(declinar('etxe','nork','singularra'), 'etxeak');
+assert.equal(deklinatu("neska", "nork", "singularra"), 'neskak');
+assert.equal(deklinatu("neska", "nork", "plurala"), 'neskek');
+assert.equal(deklinatu("neska", "nork", "mugagabea"), 'neskak');
+assert.equal(deklinatu("mutil", "nori", "mugagabea"), 'mutili');
+assert.equal(deklinatu("txakur", "nori", "mugagabea"), 'txakurri');
+assert.equal(deklinatu("ur", "noren", "mugagabea"), 'uren');
+assert.equal(deklinatu("etxe", "zertaz", "mugagabea"), 'etxez');
+assert.equal(deklinatu("mutil", "zertaz", "mugagabea"), 'mutilez');
+console.log('declinar OK')
+
 
