@@ -159,8 +159,8 @@ export class AditzakPraktikatuPractica implements OnInit {
       this.fraseAAcertar[3] = "\n(" + this.palabraSeleccionada.denbora + ")";
     } else if (this.modo === 'norNork' && 'nor' in this.palabraSeleccionada && 'nork' in this.palabraSeleccionada) {
       this.fraseAAcertar[0] = this.palabraSeleccionada.nork + " " + this.palabraSeleccionada.nor;
-      this.fraseAAcertar[1] = " ";
-      this.fraseAAcertar[2] = this.verboNorNork;
+      this.fraseAAcertar[1] = " " + this.verboNorNork;
+      this.fraseAAcertar[2] = "";
     }
 
     if (this.modo === 'trikoa') {
@@ -197,7 +197,7 @@ export class AditzakPraktikatuPractica implements OnInit {
 
     this.intentos--;
     this.textoAcierto = this.intentos > 0 ? 'Intentalo de nuevo' : '';
-    this.textoAcierto += `<br>Intentos restantes: ${this.intentos}`;
+    this.textoAcierto += this.intentos > 0 ? `<br>Intentos restantes: ${this.intentos}`: '';
     this.classTextoAcierto = 'text-center text-info';
   }
 

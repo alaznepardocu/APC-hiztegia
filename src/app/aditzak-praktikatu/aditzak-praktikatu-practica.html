@@ -47,7 +47,7 @@
 }
     <p [class]="classTextoAcierto" [innerHTML]="textoAcierto"></p>
     @if (intentos === 0) {
-        <p class="fs-4 text-center">La solución era:<br>
+        <p class="fs-4 text-center text-danger">La solución era:<br>
             @if(practicarDeclinacion && 'pertsona' in this.palabraSeleccionada){
             <b>{{this.palabraSeleccionada.pertsona}}</b><br>
             }

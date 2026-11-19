@@ -1,0 +1,39 @@
+@if(ejercicioActual){
+<div class="card p-3">
+
+<!-- Pistas del ejercicio: Palabra base + Kasua + Zenbakia -->
+
+    <p class="fs-2 text-center fw-bold pb-2">{{ ejercicioActual.hitza.eu }}<br>
+        <span class="fs-3 text-center fw-normal pb-2">({{ ejercicioActual.kasua }})
+        @if(ejercicioActual.hitza.mota === "izenArrunta"){
+            ({{ ejercicioActual.zenbakia }})
+        }</span>
+        
+    </p>
+
+<!-- Estado: Todavía no ha acertado -->
+@if (intentos > 0 && !acertado) {
+        <form class="input-group mb-3 w-100" (ngSubmit)="comprobarRespuesta()">
+        <input #primerInput type="text" class="form-control" name="erderaz" placeholder="hitz"
+            [(ngModel)]="respuestaUsuario">
+        <button class="btn btn-warning" type="submit">Saiatu</button>
+        <button class="btn btn-outline-secondary" type="button"
+            (click)="respuestaUsuario = ''">X</button>
+    </form>
+}      
+    @if(acertado){
+    <p class="text-center text-success fs-3">{{solucionCorrecta}}</p>}
+    <p [class]="classTextoAcierto" [innerHTML]="textoAcierto"></p>
+    @if (intentos === 0) {
+        <p class="fs-4 text-center text-danger">La solución era:<br><b>{{solucionCorrecta}}</b></p>
+    }
+</div>
+<hr>
+<div class="d-grid gap-between-5">
+    @if (ejerciciosPendientes.length > 0) {
+        <br><button class="btn btn-secondary" (click)="pasarPalabra()">Beste Hitz Bat</button>
+    }
+    <p class="text-center">Palabras restantes: {{ejerciciosPendientes.length}} / {{nEjercicios}}</p>
+    <button class="btn btn-danger" (click)="reset.emit()">Reset</button>
+</div>
+}

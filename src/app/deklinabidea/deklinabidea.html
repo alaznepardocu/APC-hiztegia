@@ -1,0 +1,17 @@
+<div class="d-flex justify-content-center mx-3">
+  <div class="container w-80 text-center">
+    @switch (pantalla()) {
+      @case ('cargando') {
+        <p>Cargando Deklinabidea...</p>
+      }
+      @case ('filtros') {
+        <app-deklinabidea-filtros (empezar)="empezarPractica($event)" />
+      }
+      @case ('practicando') {
+        <app-deklinabidea-practica
+          [listaEjercicios]="sesionPractica"
+          (reset)="reset()" />
+      }
+    }
+  </div>
+</div>

@@ -1,0 +1,96 @@
+<div class="card p-3">
+  <h1 class="text-primary text-center">Deklinabidea a estudiar</h1>
+  <hr>
+  <h2>Kasuak</h2>
+  
+  <div class="d-flex justify-content-center py-2">
+    <div class="form-check">
+      <input 
+        class="form-check-input" 
+        type="checkbox" 
+        id="todos-kasuak" 
+        [checked]="todosDeklinabideSeleccionado"
+        (change)="seleccionarTodoDeklinabide($any($event.target).checked)">
+      <label class="form-check-label" for="todos-kasuak">Seleccionar todos los kasuak</label>
+    </div>
+  </div> 
+
+  <div class="card px-5 py-3">
+    <h1>oinarrizkoak</h1>
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3 py-2 align-center justify-content-center">
+      @for (kasu of oinarrizkoak; track kasu; let i = $index) {
+        <div class="col">
+          <div class="form-check d-flex align-items-center justify-content-center gap-2 border rounded p-2 h-100">
+            <input 
+              class="form-check-input m-0 flex-shrink-0" 
+              [checked]="kasuakAEstudiar.includes(kasu)"
+              (change)="onChangeKasu(kasu, $any($event.target).checked)" 
+              name="{{kasu}}" 
+              type="checkbox"
+              id="oinarrizkoak-{{i}}">
+            <label class="form-check-label text-center" for="oinarrizkoak-{{i}}">{{kasu}}</label>
+          </div>
+        </div>
+      }
+    </div>
+    <hr>
+    <h1>erlaziozkoak</h1>
+      <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3 py-2 align-center justify-content-center">
+      @for (kasu of erlaziozkoak; track kasu; let i = $index) {
+        <div class="col">
+          <div class="form-check d-flex align-items-center justify-content-center gap-2 border rounded p-2 h-100">
+            <input 
+              class="form-check-input m-0 flex-shrink-0" 
+              [checked]="kasuakAEstudiar.includes(kasu)"
+              (change)="onChangeKasu(kasu, $any($event.target).checked)" 
+              name="{{kasu}}" 
+              type="checkbox"
+              id="erlaziozkoak-{{i}}">
+            <label class="form-check-label text-center" for="erlaziozkoak-{{i}}">{{kasu}}</label>
+          </div>
+        </div>
+      }
+    </div>
+    <hr>
+    <h1>lekukoak</h1>
+      <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3 py-2 align-center justify-content-center">
+      @for (kasu of lekukoak; track kasu; let i = $index) {
+        <div class="col">
+          <div class="form-check d-flex align-items-center justify-content-center gap-2 border rounded p-2 h-100">
+            <input 
+              class="form-check-input m-0 flex-shrink-0" 
+              [checked]="kasuakAEstudiar.includes(kasu)"
+              (change)="onChangeKasu(kasu, $any($event.target).checked)" 
+              name="{{kasu}}" 
+              type="checkbox"
+              id="lekukoak-{{i}}">
+            <label class="form-check-label text-center" for="lekukoak-{{i}}">{{kasu}}</label>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (kasuakAEstudiar.length > 0 && hitzakAEstudiar.length > 0) {
+      <p class="mt-3 text-center">
+        Kasuak seleccionados: <strong>{{kasuakAEstudiar.length}}</strong> | 
+        Palabras disponibles: <strong>{{hitzakAEstudiar.length}}</strong>
+        <input 
+    type="number" 
+    class="form-control w-25 mx-auto my-2 text-center" 
+    name="nPractica" 
+    min="1" 
+    placeholder="1" 
+    [(ngModel)]="nPractica">
+
+        Número de palabras de sesión de estudio: {{kasuakAEstudiar.length*nPractica}}
+      </p>
+      
+
+      <button class="btn btn-danger w-100" (click)="iniciarPractica()">Hasi</button>
+    } @else {
+      <p class="text-danger text-center mt-3">
+        {{textoFiltrado || 'Selecciona al menos un kasu para comenzar'}}
+      </p>
+    }
+  </div>
+</div>
