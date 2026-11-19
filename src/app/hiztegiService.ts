@@ -1,5 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { AditzaFila, Hitz, NorNork, NuevaHitz, Trinkoa, AditzGehigarria } from './hiztegia';
+import { AditzaFila, Hitz, NorNork, NuevaHitz, Trinkoa, AditzGehigarria, DeklinabideHitza } from './hiztegia';
 import { supabase } from './supabase';
 import { etiquetaIkasturtea } from './utilidades';
 
@@ -13,6 +13,7 @@ export class ServiceHiztegia {
     ikasturteak = signal<string[]>(['Todos']);    // '2026-27'...
     fechas = signal<string[]>(['Todos']);         // fechas ISO, la más reciente primero
     gehigarriakFilas = signal<AditzGehigarria[]>([]);
+    deklinabideHitzak = signal<DeklinabideHitza[]>([]);
 
     gehigarriak(aditza: string, objektu: string | null = null): string[] {
     return this.gehigarriakFilas()
@@ -81,10 +82,11 @@ export class ServiceHiztegia {
     private async descargar(): Promise<void> {
         this.error.set(null);
         try {
-            const [palabras, aditzak, gehigarriak] = await Promise.all([
+            const [palabras, aditzak, gehigarriak,deklinabide] = await Promise.all([
                 this.traerTodo<Hitz>('palabras'),
                 this.traerTodo<AditzaFila>('aditzak'),
                 this.traerTodo<AditzGehigarria>('aditz_gehigarriak'),
+                this.traerTodo<DeklinabideHitza>('deklinabide_hitzak');
             ]);
 
             // Palabras
@@ -123,7 +125,7 @@ export class ServiceHiztegia {
     }
 
     /** La API devuelve como máximo 1000 filas por petición: se pide por páginas. */
-    private async traerTodo<T>(tabla: 'palabras' | 'aditzak' | 'aditz_gehigarriak'): Promise<T[]> {
+    private async traerTodo<T>(tabla: 'palabras' | 'aditzak' | 'aditz_gehigarriak'|'deklinabide_hitzak'): Promise<T[]> {
         const filas: T[] = [];
         for (let desde = 0; ; desde += 1000) {
             const { data, error } = await supabase.from(tabla).select('*').order('id').range(desde, desde + 999);

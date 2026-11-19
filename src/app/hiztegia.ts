@@ -51,3 +51,21 @@ export interface AditzGehigarria {
     objektu: 'singularra' | 'plurala' | null,
     texto: string
 }
+
+export const HITZ_MOTAK = {
+  IZEN_ARRUNTA: 'izenArrunta',
+  IZEN_BEREZIA: 'izenBerezia',
+} as const;
+
+export type HitzMota = (typeof HITZ_MOTAK)[keyof typeof HITZ_MOTAK];
+
+export const HITZ_MOTA_ETIKETAK: Record<HitzMota, string> = {
+  [HITZ_MOTAK.IZEN_ARRUNTA]: 'Izen arrunta',
+  [HITZ_MOTAK.IZEN_BEREZIA]: 'Izen berezia',
+};
+
+export interface DeklinabideHitza {
+  hitza: string;
+  mota: HitzMota;
+  biziduna: boolean;
+}
