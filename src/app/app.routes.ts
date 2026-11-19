@@ -21,6 +21,11 @@ export const routes: Routes = [
     loadComponent: () => import('./aditza-taulak/aditza-taulak').then(m => m.AditzaTaulak),
     title: 'Aditza Taulak',
   },
+  {
+    path: 'deklinabide-praktikatu',
+    loadComponent: () => import('./deklinabidea/deklinabidea').then(m => m.Deklinabidea),
+    title: 'Deklinabide Praktikatu',
+  },
   { path: 'info', loadComponent: () => import('./info/info').then(m => m.Info), title: 'Info' },
   {
     path: 'menuAdmin',

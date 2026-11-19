@@ -1,10 +1,26 @@
-export type Kasua = 'nor' | 'nork' | 'nori' | 'noren' | 'norekin' | 'norentzat' | 'zertaz' | 'non' | 'nondik' | 'nora' | 'norantz' | 'noraino' | 'nongo';
+import { DeklinabideHitza, HitzMota } from "../hiztegia";
+
+export type Kasua = typeof KASUAK[number];
 export type Zenbakia = 'singularra' | 'plurala' | 'mugagabea';
-export type IzenMota = 'izenBerezia' | 'izenArrunta';
+export type IzenMota = HitzMota;
+
+
+export const KASUAK = [
+  'nor', 'nork', 'nori', 'noren', 'norekin', 'norentzat', 'zertaz',
+  'non', 'nondik', 'nora', 'norantz', 'noraino', 'nongo',
+] as const;
 
 const KASU_GRAMATIKALAK: Kasua[] = [
     "nor", "nork", "nori", "noren", "norekin", "norentzat", "zertaz"
 ] as const;
+
+export interface PraktikaItem {
+  hitza: DeklinabideHitza;
+  kasua: Kasua;
+  zenbakia: Zenbakia
+}
+
+
 
 const ATZIZKIAK:
     Record<Kasua,

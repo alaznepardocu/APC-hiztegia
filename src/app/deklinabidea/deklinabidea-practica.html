@@ -1,0 +1,67 @@
+@if(ejercicioActual){
+<div class="card p-4 text-center">
+
+<!-- Pistas del ejercicio: Palabra base + Kasua + Zenbakia -->
+<div class="mb-3">
+    <h2 class="text-primary">{{ ejercicioActual.hitza.hitza }}</h2>
+    <div class="d-flex justify-content-center gap-2 mt-2">
+    <span class="badge bg-secondary fs-6">{{ ejercicioActual.kasua }}</span>
+    <span class="badge bg-info text-dark fs-6">{{ ejercicioActual.zenbakia }}</span>
+    </div>
+</div>
+
+<!-- Estado: Todavía no ha acertado -->
+@if (!acertado) {
+    <div class="my-3">
+    <input 
+        type="text" 
+        class="form-control text-center fs-5 w-50 mx-auto"
+        placeholder="Idatzi hemen..."
+        [(ngModel)]="respuestaUsuario"
+        (keyup.enter)="comprobarRespuesta()"
+        [disabled]="intentos === 0">
+    </div>
+} @else {
+    <!-- Estado: Acertado -->
+    <div class="alert alert-success my-3">
+    Oso ondo! <strong>{{ solucionCorrecta }}</strong>
+    </div>
+}
+
+<!-- Botón de comprobar mientras queden intentos -->
+@if (intentos > 0 && !acertado) {
+    <button class="btn btn-primary w-50 mx-auto mb-3" (click)="comprobarRespuesta()">
+    Saiatu ({{ intentos }})
+    </button>
+}
+
+<!-- Estado: Se acabaron los intentos -->
+@if (intentos === 0 && !acertado) {
+    <div class="alert alert-danger my-3">
+    La solución era: <strong>{{ solucionCorrecta }}</strong>
+    </div>
+}
+
+<!-- Botón para pasar a la siguiente palabra -->
+@if (acertado || intentos === 0) {
+    @if (ejerciciosPendientes.length > 0) {
+    <button class="btn btn-success w-50 mx-auto mb-3" (click)="siguientePalabra()">
+        Beste Hitz Bat
+    </button>
+    } @else {
+    <p class="text-success fw-bold">¡Sesión completada!</p>
+    }
+}
+
+<!-- Pie con progreso y botón Reset -->
+<hr>
+<div class="d-flex justify-content-between align-items-center">
+  <span>
+    Palabras restantes: <strong>{{ ejerciciosPendientes.length }}</strong> / {{ listaEjercicios.length }}
+  </span>
+  <button class="btn btn-outline-secondary btn-sm" (click)="volverAFiltros()">Reset</button>
+</div>
+
+
+</div>
+}

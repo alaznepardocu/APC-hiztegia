@@ -69,3 +69,4 @@ export interface DeklinabideHitza {
   mota: HitzMota;
   biziduna: boolean;
 }
+

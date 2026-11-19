@@ -86,7 +86,7 @@ export class ServiceHiztegia {
                 this.traerTodo<Hitz>('palabras'),
                 this.traerTodo<AditzaFila>('aditzak'),
                 this.traerTodo<AditzGehigarria>('aditz_gehigarriak'),
-                this.traerTodo<DeklinabideHitza>('deklinabide_hitzak');
+                this.traerTodo<DeklinabideHitza>('deklinabide_hitzak')
             ]);
 
             // Palabras

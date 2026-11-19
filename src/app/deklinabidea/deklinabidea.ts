@@ -1,32 +1,35 @@
-import { Component, signal } from '@angular/core';
-import { Hitz } from '../hiztegia';
+import { Component, effect, signal } from '@angular/core';
 import { ServiceHiztegia } from '../hiztegiService';
+import { DeklinabideaFiltros } from './deklinabidea-filtros';
+import { DeklinabideaPractica } from './deklinabidea-practica';
+import { type PraktikaItem } from './deklinatu';
 
 @Component({
-  imports: [],
+  imports: [DeklinabideaFiltros, DeklinabideaPractica],
   selector: 'app-deklinabidea',
   styleUrl: './deklinabidea.css',
   templateUrl: './deklinabidea.html',
 })
 export class Deklinabidea {
   pantalla = signal<'cargando' | 'filtros' | 'practicando'>('cargando');
-  sesionPractica: { palabras: Hitz[]; modo: string } = { palabras: [], modo: 'Euskara' };
+  sesionPractica: PraktikaItem[] = [];
 
   public constructor(public readonly serviceHiztegia: ServiceHiztegia) {
     effect(() => {
-      const palabras = this.serviceHiztegia.hiztegia();
-      if (palabras.length > 0) {
+      const palabras = this.serviceHiztegia.deklinabideHitzak();
+      if (palabras.length > 0 && this.pantalla() === 'cargando') {
         this.pantalla.set('filtros');
       }
     });
   }
 
-  public empezarPractica(sesion: { palabras: Hitz[]; modo: string }): void {
-    this.sesionPractica = sesion;
+  public empezarPractica(listaEjercicios: PraktikaItem[]): void {
+    this.sesionPractica = listaEjercicios;
     this.pantalla.set('practicando');
   }
 
   public reset(): void {
+    this.sesionPractica = [];
     this.pantalla.set('filtros');
   }
 }
