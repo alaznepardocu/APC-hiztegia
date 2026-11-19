@@ -65,8 +65,8 @@ export const HITZ_MOTA_ETIKETAK: Record<HitzMota, string> = {
 };
 
 export interface DeklinabideHitza {
-  hitza: string;
+  eu: string;
   mota: HitzMota;
-  biziduna: boolean;
+  bizigabe: boolean;
 }
 

@@ -16,8 +16,9 @@
   </div> 
 
   <div class="card px-5 py-3">
+    <h1>oinarrizkoak</h1>
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3 py-2 align-center justify-content-center">
-      @for (kasu of kasuak; track kasu; let i = $index) {
+      @for (kasu of oinarrizkoak; track kasu; let i = $index) {
         <div class="col">
           <div class="form-check d-flex align-items-center justify-content-center gap-2 border rounded p-2 h-100">
             <input 
@@ -26,8 +27,44 @@
               (change)="onChangeKasu(kasu, $any($event.target).checked)" 
               name="{{kasu}}" 
               type="checkbox"
-              id="kasu-{{i}}">
-            <label class="form-check-label text-center" for="kasu-{{i}}">{{kasu}}</label>
+              id="oinarrizkoak-{{i}}">
+            <label class="form-check-label text-center" for="oinarrizkoak-{{i}}">{{kasu}}</label>
+          </div>
+        </div>
+      }
+    </div>
+    <hr>
+    <h1>erlaziozkoak</h1>
+      <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3 py-2 align-center justify-content-center">
+      @for (kasu of erlaziozkoak; track kasu; let i = $index) {
+        <div class="col">
+          <div class="form-check d-flex align-items-center justify-content-center gap-2 border rounded p-2 h-100">
+            <input 
+              class="form-check-input m-0 flex-shrink-0" 
+              [checked]="kasuakAEstudiar.includes(kasu)"
+              (change)="onChangeKasu(kasu, $any($event.target).checked)" 
+              name="{{kasu}}" 
+              type="checkbox"
+              id="erlaziozkoak-{{i}}">
+            <label class="form-check-label text-center" for="erlaziozkoak-{{i}}">{{kasu}}</label>
+          </div>
+        </div>
+      }
+    </div>
+    <hr>
+    <h1>lekukoak</h1>
+      <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3 py-2 align-center justify-content-center">
+      @for (kasu of lekukoak; track kasu; let i = $index) {
+        <div class="col">
+          <div class="form-check d-flex align-items-center justify-content-center gap-2 border rounded p-2 h-100">
+            <input 
+              class="form-check-input m-0 flex-shrink-0" 
+              [checked]="kasuakAEstudiar.includes(kasu)"
+              (change)="onChangeKasu(kasu, $any($event.target).checked)" 
+              name="{{kasu}}" 
+              type="checkbox"
+              id="lekukoak-{{i}}">
+            <label class="form-check-label text-center" for="lekukoak-{{i}}">{{kasu}}</label>
           </div>
         </div>
       }

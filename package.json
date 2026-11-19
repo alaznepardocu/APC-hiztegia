@@ -1,6 +1,6 @@
 {
   "name": "apc-hiztegia",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "type": "module",
   "scripts": {
     "build": "ng build --configuration production",

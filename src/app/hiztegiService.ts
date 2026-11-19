@@ -116,6 +116,9 @@ export class ServiceHiztegia {
             this.auxiliarrakDisponibles.set(nombresAuxiliarrak);
             this.gehigarriakFilas.set(gehigarriak);
 
+            // Denklinabide
+            this.deklinabideHitzak.set(deklinabide);
+
             this.cargado.set(true);
         } catch (e) {
             console.error('Error cargando datos de Supabase', e);
