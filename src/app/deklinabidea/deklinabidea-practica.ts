@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { deklinatu, IzenMota, type PraktikaItem } from './deklinatu';
+import { normalizar } from '../utilidades';
 
 @Component({
   selector: 'app-deklinabidea-practica',
@@ -82,34 +83,30 @@ export class DeklinabideaPractica implements OnInit {
   comprobarRespuesta(): void {
     if (!this.ejercicioActual || this.acertado || this.intentos === 0) return;
 
-    const limpiaUsuario = this.respuestaUsuario.trim().toLowerCase();
-    const limpiaSolucion = this.solucionCorrecta.trim().toLowerCase();
+    const limpiaUsuario = normalizar(this.respuestaUsuario);
+    const limpiaSolucion = normalizar(this.solucionCorrecta);
 
     if (limpiaUsuario === limpiaSolucion) {
       this.acertado = true;
       this.textoAcierto = '<strong>Oso ondo!</strong><br>';
       this.classTextoAcierto = 'text-center text-success fw-bold fs-2';
       this.ejerciciosPendientes.shift();
-      // No vaciamos palabraSeleccionada aquí para que no desaparezca el enunciado de arriba al acertar
       if (this.ejerciciosPendientes.length === 0) {
         this.textoAcierto = 'Zorionak!<br> Has adivinado todas las palabras.';
       }
       return;
-    }
-    else {
+    } else {
       const fallado = this.ejerciciosPendientes.shift();
       if (fallado) {
         this.ejerciciosPendientes.push(fallado);
       }
     }
+
     this.intentos--;
     this.textoAcierto = this.intentos > 0 ? 'Intentalo de nuevo' : '';
     this.textoAcierto += this.intentos > 0 ? `<br>Intentos restantes: ${this.intentos}` : '';
     this.classTextoAcierto = 'text-center text-info';
-
   }
-
-
 
 
   volverAFiltros(): void {

@@ -1,17 +1,27 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ServiceHiztegia } from '../hiztegiService';
-import { DeklinabideHitza } from '../hiztegia';
+import { DeklinabideHitza, PERTSONA_IZEN_ORDAINAK, ERAKUSLEAK, HITZ_MOTAK } from '../hiztegia';
 import {
   esCombinacionValida,
   KASUAK,
   PraktikaItem,
   type Kasua,
   type Zenbakia,
-  OINARRIZKOAK, 
-  ERLAZIOZKOAK, 
-  LEKUKOAK
+  OINARRIZKOAK,
+  ERLAZIOZKOAK,
+  LEKUKOAK,
+  BIZIDUN_KASUAK
 } from './deklinatu';
+
+export interface FiltroPalabrasConfig {
+  pertsonaIzenOrdainak: boolean;
+  erakusleak: boolean;
+  izenBereziaLekua: boolean;   // mota === 'izenBerezia' && bizigabe === true
+  izenBereziaPertsona: boolean; // mota === 'izenBerezia' && bizigabe === false
+  izenArruntaBizigabe: boolean; // mota === 'izenArrunta' && bizigabe === true
+  izenArruntaBizidun: boolean;  // mota === 'izenArrunta' && bizigabe === false
+}
 
 @Component({
   imports: [FormsModule],
@@ -23,30 +33,142 @@ export class DeklinabideaFiltros implements OnInit {
   readonly oinarrizkoak = OINARRIZKOAK;
   readonly erlaziozkoak = ERLAZIOZKOAK;
   readonly lekukoak = LEKUKOAK;
+  readonly bizidunak = BIZIDUN_KASUAK;
+
   kasuakAEstudiar: Kasua[] = [];
-  hitzakAEstudiar: DeklinabideHitza[] = [];
   textoFiltrado = '';
   nPractica: number = 1;
+  todasLasPalabras: DeklinabideHitza[] = [];
+
+  // Selector de tipos de palabra
+  filtroPalabras: FiltroPalabrasConfig = {
+    pertsonaIzenOrdainak: true,
+    erakusleak: true,
+    izenBereziaLekua: true,
+    izenBereziaPertsona: true,
+    izenArruntaBizigabe: true,
+    izenArruntaBizidun: true,
+  };
+
+  // Selector de números (singularra / plurala / mugagabea)
+  zenbakiakSeleccionados: Record<Zenbakia, boolean> = {
+    singularra: true,
+    plurala: true,
+    mugagabea: true,
+  };
+
+  readonly zenbakiAukerak: { valor: Zenbakia; etiqueta: string }[] = [
+    { valor: 'singularra', etiqueta: 'Singularra' },
+    { valor: 'plurala', etiqueta: 'Plurala' },
+    { valor: 'mugagabea', etiqueta: 'Mugagabea' },
+  ];
 
   @Output() empezar = new EventEmitter<PraktikaItem[]>();
 
   constructor(public readonly serviceHiztegia: ServiceHiztegia) {}
 
   ngOnInit(): void {
-    this.hitzakAEstudiar = this.serviceHiztegia.deklinabideHitzak
+    const rawHitzak = this.serviceHiztegia.deklinabideHitzak
       ? this.serviceHiztegia.deklinabideHitzak()
       : [];
+    this.todasLasPalabras = Array.isArray(rawHitzak) ? rawHitzak : [];
+    this.actualizarMensaje();
   }
 
-  get todosDeklinabideSeleccionado(): boolean {
-    return (
-      this.kasuak.length > 0 &&
-      this.kasuak.every((kasu) => this.kasuakAEstudiar.includes(kasu))
+  // Lista activa de zenbakiak marcados
+  get zenbakiakActivos(): Zenbakia[] {
+    return (['singularra', 'plurala', 'mugagabea'] as Zenbakia[]).filter(
+      (z) => this.zenbakiakSeleccionados[z]
     );
   }
 
-  seleccionarTodoDeklinabide(isChecked: boolean): void {
-    this.kasuakAEstudiar = isChecked ? [...this.kasuak] : [];
+  // Palabras resultantes según el filtro de palabras elegido
+  get hitzakAEstudiar(): DeklinabideHitza[] {
+    const resultado: DeklinabideHitza[] = [];
+
+    for (const hitza of this.todasLasPalabras ?? []) {
+      if (hitza.mota === HITZ_MOTAK.IZEN_BEREZIA) {
+        if (hitza.bizigabe && this.filtroPalabras.izenBereziaLekua) {
+          resultado.push(hitza);
+        } else if (!hitza.bizigabe && this.filtroPalabras.izenBereziaPertsona) {
+          resultado.push(hitza);
+        }
+      } else if (hitza.mota === HITZ_MOTAK.IZEN_ARRUNTA) {
+        if (hitza.bizigabe && this.filtroPalabras.izenArruntaBizigabe) {
+          resultado.push(hitza);
+        } else if (!hitza.bizigabe && this.filtroPalabras.izenArruntaBizidun) {
+          resultado.push(hitza);
+        }
+      }
+    }
+
+    if (this.filtroPalabras.pertsonaIzenOrdainak) {
+      resultado.push(...PERTSONA_IZEN_ORDAINAK);
+    }
+
+    if (this.filtroPalabras.erakusleak) {
+      resultado.push(...ERAKUSLEAK);
+    }
+
+    return resultado;
+  }
+
+  onChangeZenbakia(zenbakia: Zenbakia, checked: boolean): void {
+    this.zenbakiakSeleccionados[zenbakia] = checked;
+    this.actualizarMensaje();
+  }
+
+  seleccionarTodosZenbakiak(checked: boolean): void {
+    this.zenbakiakSeleccionados = {
+      singularra: checked,
+      plurala: checked,
+      mugagabea: checked,
+    };
+    this.actualizarMensaje();
+  }
+
+  get todosZenbakiakSeleccionados(): boolean {
+    return (['singularra', 'plurala', 'mugagabea'] as Zenbakia[]).every(
+      (z) => this.zenbakiakSeleccionados[z]
+    );
+  }
+
+  seleccionarTodasPalabras(checked: boolean): void {
+    this.filtroPalabras = {
+      pertsonaIzenOrdainak: checked,
+      erakusleak: checked,
+      izenBereziaLekua: checked,
+      izenBereziaPertsona: checked,
+      izenArruntaBizigabe: checked,
+      izenArruntaBizidun: checked,
+    };
+    this.actualizarMensaje();
+  }
+
+  get todasPalabrasSeleccionadas(): boolean {
+    return Object.values(this.filtroPalabras).every(Boolean);
+  }
+
+  isBloqueSeleccionado(bloque: readonly Kasua[]): boolean {
+    return bloque.length > 0 && bloque.every((kasu) => this.kasuakAEstudiar.includes(kasu));
+  }
+
+  seleccionarBloque(bloque: readonly Kasua[], seleccionado: boolean): void {
+    if (seleccionado) {
+      const combinados = new Set([...this.kasuakAEstudiar, ...bloque]);
+      this.kasuakAEstudiar = Array.from(combinados);
+    } else {
+      this.kasuakAEstudiar = this.kasuakAEstudiar.filter((kasu) => !bloque.includes(kasu));
+    }
+    this.actualizarMensaje();
+  }
+
+  get todosDeklinabideSeleccionado(): boolean {
+    return KASUAK.every((kasu) => this.kasuakAEstudiar.includes(kasu));
+  }
+
+  seleccionarTodoDeklinabide(seleccionado: boolean): void {
+    this.kasuakAEstudiar = seleccionado ? [...KASUAK] : [];
     this.actualizarMensaje();
   }
 
@@ -64,8 +186,10 @@ export class DeklinabideaFiltros implements OnInit {
   private actualizarMensaje(): void {
     if (this.kasuakAEstudiar.length === 0) {
       this.textoFiltrado = 'No se ha seleccionado ningún kasu';
+    } else if (this.zenbakiakActivos.length === 0) {
+      this.textoFiltrado = 'Selecciona al menos un zenbakia';
     } else if (this.hitzakAEstudiar.length === 0) {
-      this.textoFiltrado = 'No hay palabras disponibles en el diccionario';
+      this.textoFiltrado = 'No hay palabras disponibles con los filtros actuales';
     } else {
       this.textoFiltrado = '';
     }
@@ -74,18 +198,44 @@ export class DeklinabideaFiltros implements OnInit {
   private generarEjercicios(): PraktikaItem[] {
     const paresBase: { hitza: DeklinabideHitza; kasua: Kasua }[] = [];
     const cantidad = Math.max(1, this.nPractica || 1);
+    const zenbakiakDisponibles = this.zenbakiakActivos;
 
-    // 1. Generamos las combinaciones filtrando previamente las palabras válidas para cada kasu
+    if (zenbakiakDisponibles.length === 0) {
+      return [];
+    }
+
+    // `hitzakAEstudiar` ya incluye las palabras filtradas + pronombres/demostrativos activos
+    const candidatos: DeklinabideHitza[] = this.hitzakAEstudiar;
+
+    // 1. Filtramos elementos válidos para cada kasua
     for (const kasua of this.kasuakAEstudiar) {
-      const palabrasValidasParaKasu = this.hitzakAEstudiar.filter((hitza) => {
-        // Para izenBerezia solo aplica 'mugagabea'; para izenArrunta probamos con 'singularra'
-        const zenbakiPrueba: Zenbakia =
-          hitza.mota === 'izenBerezia' ? 'mugagabea' : 'singularra';
-        return esCombinacionValida(hitza, kasua, zenbakiPrueba);
+      const palabrasValidasParaKasu = candidatos.filter((hitza) => {
+        if (hitza.mota === HITZ_MOTAK.IZEN_BEREZIA) {
+          return (
+            zenbakiakDisponibles.includes('mugagabea') &&
+            esCombinacionValida(hitza, kasua, 'mugagabea')
+          );
+        }
+
+        if (
+          hitza.mota === HITZ_MOTAK.PERTSONA_IZEN_ORDAINA ||
+          hitza.mota === HITZ_MOTAK.ERAKUSLEA
+        ) {
+          const z = hitza.zenbakia ?? 'singularra';
+          return (
+            zenbakiakDisponibles.includes(z) &&
+            esCombinacionValida(hitza, kasua, z)
+          );
+        }
+
+        // Para izenArrunta, válida si funciona con al menos uno de los zenbakiak activos
+        return zenbakiakDisponibles.some((z) =>
+          esCombinacionValida(hitza, kasua, z)
+        );
       });
 
       if (palabrasValidasParaKasu.length === 0) {
-        continue; // Si ninguna palabra sirve para este kasu, pasamos al siguiente
+        continue;
       }
 
       const palabrasMezcladas = [...palabrasValidasParaKasu].sort(
@@ -95,47 +245,94 @@ export class DeklinabideaFiltros implements OnInit {
       const limite = Math.min(cantidad, palabrasValidasParaKasu.length);
 
       for (let i = 0; i < limite; i++) {
-        const hitza = palabrasMezcladas[i];
-        paresBase.push({ hitza, kasua });
+        paresBase.push({ hitza: palabrasMezcladas[i], kasua });
       }
     }
 
-    // 2. Separamos nombres propios (izenBerezia) de nombres comunes (izenArrunta)
-    const izenBereziak = paresBase.filter((p) => p.hitza.mota === 'izenBerezia');
+    // 2. Separamos por tipo de palabra
+    const fijosBerezia = paresBase.filter(
+      (p) => p.hitza.mota === HITZ_MOTAK.IZEN_BEREZIA
+    );
+    const ordainEtaErakusleak = paresBase.filter(
+      (p) =>
+        p.hitza.mota === HITZ_MOTAK.PERTSONA_IZEN_ORDAINA ||
+        p.hitza.mota === HITZ_MOTAK.ERAKUSLEA
+    );
     const izenArruntak = paresBase
-      .filter((p) => p.hitza.mota !== 'izenBerezia')
+      .filter(
+        (p) =>
+          p.hitza.mota !== HITZ_MOTAK.IZEN_BEREZIA &&
+          p.hitza.mota !== HITZ_MOTAK.PERTSONA_IZEN_ORDAINA &&
+          p.hitza.mota !== HITZ_MOTAK.ERAKUSLEA
+      )
       .sort(() => Math.random() - 0.5);
 
-    // 3. A los izenBerezia les asignamos directamente 'mugagabea'
-    const ejerciciosBerezia: PraktikaItem[] = izenBereziak.map((par) => ({
-      ...par,
-      zenbakia: 'mugagabea',
-    }));
+    // 3. Izen bereziak -> mugagabea (si está activo)
+    const ejerciciosBerezia: PraktikaItem[] = zenbakiakDisponibles.includes('mugagabea')
+      ? fijosBerezia
+          .filter((par) => esCombinacionValida(par.hitza, par.kasua, 'mugagabea'))
+          .map((par) => ({
+            ...par,
+            zenbakia: 'mugagabea' as Zenbakia,
+          }))
+      : [];
 
-    // 4. Solo los izenArrunta se reparten equilibradamente entre los 3 zenbakiak
-    const zenbakiak: Zenbakia[] = ['singularra', 'plurala', 'mugagabea'].sort(
-      () => Math.random() - 0.5
-    ) as Zenbakia[];
+    // 4. Pertsona izen ordainak y erakusleak -> conservan su zenbakia si está activo
+    const ejerciciosOrdainErakusle: PraktikaItem[] = ordainEtaErakusleak
+      .map((par) => {
+        const z = (par.hitza.zenbakia ?? 'singularra') as Zenbakia;
+        return { ...par, zenbakia: z };
+      })
+      .filter(
+        (item) =>
+          zenbakiakDisponibles.includes(item.zenbakia) &&
+          esCombinacionValida(item.hitza, item.kasua, item.zenbakia)
+      );
 
-    const ejerciciosArrunta: PraktikaItem[] = izenArruntak.map((par, index) => ({
-      ...par,
-      zenbakia: zenbakiak[index % zenbakiak.length],
-    }));
-
-    // 5. Juntamos ambos grupos y barajamos el resultado final
-    return [...ejerciciosBerezia, ...ejerciciosArrunta].sort(
+    // 5. Izen arruntak -> reparto equilibrado solo entre los zenbakiak activos
+    const zenbakiOrdenados: Zenbakia[] = [...zenbakiakDisponibles].sort(
       () => Math.random() - 0.5
     );
+
+    const ejerciciosArrunta: PraktikaItem[] = [];
+    izenArruntak.forEach((par, index) => {
+      const zenbakiakValidos = zenbakiOrdenados.filter((z) =>
+        esCombinacionValida(par.hitza, par.kasua, z)
+      );
+
+      if (zenbakiakValidos.length > 0) {
+        ejerciciosArrunta.push({
+          ...par,
+          zenbakia: zenbakiakValidos[index % zenbakiakValidos.length],
+        });
+      }
+    });
+
+    // 6. Mezclamos el resultado final
+    return [
+      ...ejerciciosBerezia,
+      ...ejerciciosOrdainErakusle,
+      ...ejerciciosArrunta,
+    ].sort(() => Math.random() - 0.5);
+  }
+
+  isBloqueIndeterminado(bloque: readonly Kasua[]): boolean {
+    const marcados = bloque.filter((kasu) => this.kasuakAEstudiar.includes(kasu)).length;
+    return marcados > 0 && marcados < bloque.length;
   }
 
   iniciarPractica(): void {
-    if (this.kasuakAEstudiar.length > 0 && this.hitzakAEstudiar.length > 0) {
+    if (
+      this.kasuakAEstudiar.length > 0 &&
+      this.hitzakAEstudiar.length > 0 &&
+      this.zenbakiakActivos.length > 0
+    ) {
       const listaEjercicios = this.generarEjercicios();
       console.log('Ejercicios de prueba:', listaEjercicios);
 
       if (listaEjercicios.length === 0) {
         this.textoFiltrado =
-          'No hay palabras compatibles con los kasuak seleccionados.';
+          'No hay palabras compatibles con los kasuak y zenbakiak seleccionados.';
         return;
       }
 

@@ -55,6 +55,8 @@ export interface AditzGehigarria {
 export const HITZ_MOTAK = {
   IZEN_ARRUNTA: 'izenArrunta',
   IZEN_BEREZIA: 'izenBerezia',
+  PERTSONA_IZEN_ORDAINA: 'pertsonaIzenOrdaina',
+  ERAKUSLEA: 'erakuslea',
 } as const;
 
 export type HitzMota = (typeof HITZ_MOTAK)[keyof typeof HITZ_MOTAK];
@@ -62,11 +64,32 @@ export type HitzMota = (typeof HITZ_MOTAK)[keyof typeof HITZ_MOTAK];
 export const HITZ_MOTA_ETIKETAK: Record<HitzMota, string> = {
   [HITZ_MOTAK.IZEN_ARRUNTA]: 'Izen arrunta',
   [HITZ_MOTAK.IZEN_BEREZIA]: 'Izen berezia',
+  [HITZ_MOTAK.PERTSONA_IZEN_ORDAINA]: 'Pertsona izen ordaina',
+  [HITZ_MOTAK.ERAKUSLEA]: 'Erakuslea',
 };
 
 export interface DeklinabideHitza {
   eu: string;
   mota: HitzMota;
   bizigabe: boolean;
+  /** Obligatorio para pertsona izen ordainak y erakusleak (singularra / plurala) */
+  zenbakia?: 'singularra' | 'plurala';
 }
+
+export const PERTSONA_IZEN_ORDAINAK: readonly DeklinabideHitza[] = [
+  { eu: 'ni', mota: HITZ_MOTAK.PERTSONA_IZEN_ORDAINA, bizigabe: false, zenbakia: 'singularra' },
+  { eu: 'hi', mota: HITZ_MOTAK.PERTSONA_IZEN_ORDAINA, bizigabe: false, zenbakia: 'singularra' },
+  { eu: 'zu', mota: HITZ_MOTAK.PERTSONA_IZEN_ORDAINA, bizigabe: false, zenbakia: 'singularra' },
+  { eu: 'gu', mota: HITZ_MOTAK.PERTSONA_IZEN_ORDAINA, bizigabe: false, zenbakia: 'plurala' },
+  { eu: 'zuek', mota: HITZ_MOTAK.PERTSONA_IZEN_ORDAINA, bizigabe: false, zenbakia: 'plurala' },
+] as const;
+
+export const ERAKUSLEAK: readonly DeklinabideHitza[] = [
+  { eu: 'hau', mota: HITZ_MOTAK.ERAKUSLEA, bizigabe: false, zenbakia: 'singularra' },
+  { eu: 'hori', mota: HITZ_MOTAK.ERAKUSLEA, bizigabe: false, zenbakia: 'singularra' },
+  { eu: 'hura', mota: HITZ_MOTAK.ERAKUSLEA, bizigabe: false, zenbakia: 'singularra' },
+  { eu: 'hauek', mota: HITZ_MOTAK.ERAKUSLEA, bizigabe: false, zenbakia: 'plurala' },
+  { eu: 'horiek', mota: HITZ_MOTAK.ERAKUSLEA, bizigabe: false, zenbakia: 'plurala' },
+  { eu: 'haiek', mota: HITZ_MOTAK.ERAKUSLEA, bizigabe: false, zenbakia: 'plurala' },
+] as const;
 

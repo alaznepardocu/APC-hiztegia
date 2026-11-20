@@ -1,242 +1,456 @@
-import { DeklinabideHitza, HITZ_MOTAK, HitzMota } from "../hiztegia";
+import { DeklinabideHitza,
+  ERAKUSLEAK,
+  HITZ_MOTAK,
+  HitzMota,
+  PERTSONA_IZEN_ORDAINAK } from "../hiztegia";
 
 export type Kasua = typeof KASUAK[number];
 export type Zenbakia = 'singularra' | 'plurala' | 'mugagabea';
 export type IzenMota = HitzMota;
-
+export type FormaDeclinadaMap = Partial<Record<Kasua, string>>;
 
 export const KASUAK = [
   'nor', 'nork', 'nori', 'noren', 'norekin', 'norentzat', 'zertaz',
   'non', 'nondik', 'nora', 'norantz', 'noraino', 'nongo',
+  'norengan', 'norengandik', 'norengana', 'norenganantz', 'norenganaino',
 ] as const;
 
 const KASU_GRAMATIKALAK: Kasua[] = [
-    "nor", "nork", "nori", "noren", "norekin", "norentzat", "zertaz"
+  "nor", "nork", "nori", "noren", "norekin", "norentzat", "zertaz"
 ] as const;
 
-export const OINARRIZKOAK: Kasua[] = ["nor", "nork", "nori"]
-export const ERLAZIOZKOAK: Kasua[] = ["noren", "norekin", "norentzat", "zertaz"]
-export const LEKUKOAK: Kasua[] = ["non", "nondik", "nora", "norantz", "noraino", "nongo"]
+export const OINARRIZKOAK: Kasua[] = ["nor", "nork", "nori"];
+export const ERLAZIOZKOAK: Kasua[] = ["noren", "norekin", "norentzat", "zertaz"];
+export const LEKUKOAK: Kasua[] = ["non", "nondik", "nora", "norantz", "noraino", "nongo"];
+export const BIZIDUN_KASUAK: Kasua[] = [
+  "norengan", "norengandik", "norengana", "norenganantz", "norenganaino"
+];
 
 const KASU_LEKUZKOAK: Kasua[] = ['non', 'nondik', 'nora', 'norantz', 'noraino', 'nongo'];
+const KASU_BIZIDUNAK: Kasua[] = [
+  'norengan', 'norengandik', 'norengana', 'norenganantz', 'norenganaino'
+];
+
+const KASU_LEKUZKO_MUGIMENDU_ETA_KOKAPENA: readonly Kasua[] = [
+  "non",
+  "nondik",
+  "nora",
+  "norantz",
+  "noraino",
+] as const;
+
+// Excepciones inanimadas comunes que aceptan con naturalidad NORI / NORENTZAT
+const NORI_NORENTZAT_BIZIGABE_BAIMENDUAK = new Set([
+  "herri",
+  "hiri",
+]);
+
+// Sustantivos comunes inanimados (lugar y tiempo) que encajan bien en NON / NONDIK / NORA / NORANTZ / NORAINO
+const LEKU_ETA_DENBORA_BIZIGABE_BAIMENDUAK = new Set([
+  "bulego", "parke", "denda", "taberna", "jatetxe", "ospitale",
+"unibertsitate", "gela", "sukalde", "komun", "baso", "hondartza",
+"zelai", "plaza", "zubi", "geltoki", "aste", "hilabete",
+"urte", "goiz", "arratsalde"
+]);
+
+// Sustantivos comunes inanimados que pueden actuar como agente/causa en NORK con naturalidad
+const NORK_BIZIGABE_BAIMENDUAK = new Set([
+  "haize",
+  "euri",
+  "ekaitz",
+  "elur",
+  "eguzki",
+  "su",
+  "ura",
+  "ur",
+  "tximista",
+  "trumoia",
+]);
+
+
 
 export interface PraktikaItem {
   hitza: DeklinabideHitza;
   kasua: Kasua;
-  zenbakia: Zenbakia
+  zenbakia: Zenbakia;
 }
 
-
-
-const ATZIZKIAK:
-    Record<Kasua,
-        Record<Zenbakia, string>> = {
-    nor: { singularra: 'a', plurala: 'ak', 'mugagabea': '' },
-    nork: { singularra: 'ak', plurala: 'ek', 'mugagabea': 'k' },
-    nori: { singularra: 'ari', plurala: 'ei', 'mugagabea': 'i' },
-    noren: { singularra: 'aren', plurala: 'en', 'mugagabea': 'en' },
-    norekin: { singularra: 'arekin', plurala: 'ekin', 'mugagabea': 'ekin' },
-    norentzat: { singularra: 'arentzat', plurala: 'entzat', 'mugagabea': 'entzat' },
-    zertaz: { singularra: 'az', plurala: 'ez', 'mugagabea': 'z' },
-    non: { singularra: 'an', plurala: 'etan', 'mugagabea': 'tan' },
-    nondik: { singularra: 'tik', plurala: 'etatik', 'mugagabea': 'tatik' },
-    nora: { singularra: 'ra', plurala: 'etara', 'mugagabea': 'tara' },
-    nongo: { singularra: 'ko', plurala: 'etako', 'mugagabea': 'tako' },
-    norantz : {singularra: 'rantz', plurala: 'etarantz', mugagabea: 'tarantz'},
-    noraino: {singularra: 'raino', plurala: 'etaraino', mugagabea: 'taraino'}
-};
-const BIZIDUN_ATZIZKIAK = {
-    non: { singularra: 'rengan', plurala: 'engan', 'mugagabea': 'engan' },
-    nondik: { singularra: 'rengandik', plurala: 'engandik', 'mugagabea': 'engandik' },
-    nora: { singularra: 'rengana', plurala: 'engana', 'mugagabea': 'engana' },
-    norantz: {singularra: 'renganantz', plurala: 'enganantz', mugagabea: 'enganantz'},
-    noraino: {singularra: 'renganaino', plurala: 'enganaino', mugagabea: 'enganaino'}
+const ATZIZKIAK: Record<Kasua, Record<Zenbakia, string>> = {
+  nor: { singularra: 'a', plurala: 'ak', mugagabea: '' },
+  nork: { singularra: 'ak', plurala: 'ek', mugagabea: 'k' },
+  nori: { singularra: 'ari', plurala: 'ei', mugagabea: 'i' },
+  noren: { singularra: 'aren', plurala: 'en', mugagabea: 'en' },
+  norekin: { singularra: 'arekin', plurala: 'ekin', mugagabea: 'ekin' },
+  norentzat: { singularra: 'arentzat', plurala: 'entzat', mugagabea: 'entzat' },
+  zertaz: { singularra: 'az', plurala: 'ez', mugagabea: 'z' },
+  non: { singularra: 'an', plurala: 'etan', mugagabea: 'tan' },
+  nondik: { singularra: 'tik', plurala: 'etatik', mugagabea: 'tatik' },
+  nora: { singularra: 'ra', plurala: 'etara', mugagabea: 'tara' },
+  nongo: { singularra: 'ko', plurala: 'etako', mugagabea: 'tako' },
+  norantz: { singularra: 'rantz', plurala: 'etarantz', mugagabea: 'tarantz' },
+  noraino: { singularra: 'raino', plurala: 'etaraino', mugagabea: 'taraino' },
+  norengan: { singularra: 'rengan', plurala: 'engan', mugagabea: 'engan' },
+  norengandik: { singularra: 'rengandik', plurala: 'engandik', mugagabea: 'engandik' },
+  norengana: { singularra: 'rengana', plurala: 'engana', mugagabea: 'engana' },
+  norenganantz: { singularra: 'renganantz', plurala: 'enganantz', mugagabea: 'enganantz' },
+  norenganaino: { singularra: 'renganaino', plurala: 'enganaino', mugagabea: 'enganaino' },
 };
 
-export function deklinatu(raiz: string, kasua: Kasua, zenbakia: Zenbakia, izenMota: IzenMota, bizigabea: boolean): string {
-    if (!raiz) {
-        return '';
+export const FORMAK_BEREZIAK: Record<string, FormaDeclinadaMap> = {
+  // --- PERTSONA IZEN ORDAINAK (sin hura / haiek) ---
+  ni: {
+    nor: 'ni',
+    nork: 'nik',
+    nori: 'niri',
+    noren: 'nire',
+    norekin: 'nirekin',
+    norentzat: 'niretzat',
+    zertaz: 'nitaz',
+    norengan: 'nigan',
+    norengandik: 'nigandik',
+    norengana: 'nigana',
+    norenganantz: 'niganantz',
+    norenganaino: 'niganaino',
+  },
+  hi: {
+    nor: 'hi',
+    nork: 'hik',
+    nori: 'hiri',
+    noren: 'hire',
+    norekin: 'hirekin',
+    norentzat: 'hiretzat',
+    zertaz: 'hitaz',
+    norengan: 'higan',
+    norengandik: 'higandik',
+    norengana: 'higana',
+    norenganantz: 'higanantz',
+    norenganaino: 'higanaino',
+  },
+  zu: {
+    nor: 'zu',
+    nork: 'zuk',
+    nori: 'zuri',
+    noren: 'zure',
+    norekin: 'zurekin',
+    norentzat: 'zuretzat',
+    zertaz: 'zutaz',
+    norengan: 'zugan',
+    norengandik: 'zugandik',
+    norengana: 'zugana',
+    norenganantz: 'zuganantz',
+    norenganaino: 'zuganaino',
+  },
+  gu: {
+    nor: 'gu',
+    nork: 'guk',
+    nori: 'guri',
+    noren: 'gure',
+    norekin: 'gurekin',
+    norentzat: 'guretzat',
+    zertaz: 'gutaz',
+    norengan: 'gugan',
+    norengandik: 'gugandik',
+    norengana: 'gugana',
+    norenganantz: 'guganantz',
+    norenganaino: 'guganaino',
+  },
+  zuek: {
+    nor: 'zuek',
+    nork: 'zuek',
+    nori: 'zuei',
+    noren: 'zuen',
+    norekin: 'zuekin',
+    norentzat: 'zuentzat',
+    zertaz: 'zuetaz',
+    norengan: 'zuegan',
+    norengandik: 'zuegandik',
+    norengana: 'zuegana',
+    norenganantz: 'zueganantz',
+    norenganaino: 'zueganaino',
+  },
+
+  // --- ERAKUSLEAK: SINGULARRA ---
+  hau: {
+    nor: 'hau',
+    nork: 'honek',
+    nori: 'honi',
+    noren: 'honen',
+    norekin: 'honekin',
+    norentzat: 'honentzat',
+    zertaz: 'honetaz',
+    norengan: 'honengan',
+    norengandik: 'honengandik',
+    norengana: 'honengana',
+    norenganantz: 'honenganantz',
+    norenganaino: 'honenganaino',
+  },
+  hori: {
+    nor: 'hori',
+    nork: 'horrek',
+    nori: 'horri',
+    noren: 'horren',
+    norekin: 'horrekin',
+    norentzat: 'horrentzat',
+    zertaz: 'horretaz',
+    norengan: 'horrengan',
+    norengandik: 'horrengandik',
+    norengana: 'horrengana',
+    norenganantz: 'horrenganantz',
+    norenganaino: 'horrenganaino',
+  },
+  hura: {
+    nor: 'hura',
+    nork: 'hark',
+    nori: 'hari',
+    noren: 'haren',
+    norekin: 'harekin',
+    norentzat: 'harentzat',
+    zertaz: 'hartaz',
+    norengan: 'harengan',
+    norengandik: 'harengandik',
+    norengana: 'harengana',
+    norenganantz: 'harenganantz',
+    norenganaino: 'harenganaino',
+  },
+
+  // --- ERAKUSLEAK: PLURALA ---
+  hauek: {
+    nor: 'hauek',
+    nork: 'hauek',
+    nori: 'hauei',
+    noren: 'hauen',
+    norekin: 'hauekin',
+    norentzat: 'hauentzat',
+    zertaz: 'hauetaz',
+    norengan: 'hauegan',
+    norengandik: 'hauegandik',
+    norengana: 'hauegana',
+    norenganantz: 'haueganantz',
+    norenganaino: 'haueganaino',
+  },
+  horiek: {
+    nor: 'horiek',
+    nork: 'horiek',
+    nori: 'horiei',
+    noren: 'horien',
+    norekin: 'horiekin',
+    norentzat: 'horientzat',
+    zertaz: 'horietaz',
+    norengan: 'horiegan',
+    norengandik: 'horiegandik',
+    norengana: 'horiegana',
+    norenganantz: 'horieganantz',
+    norenganaino: 'horieganaino',
+  },
+  haiek: {
+    nor: 'haiek',
+    nork: 'haiek',
+    nori: 'haiei',
+    noren: 'haien',
+    norekin: 'haiekin',
+    norentzat: 'haientzat',
+    zertaz: 'haietaz',
+    norengan: 'haiengan',
+    norengandik: 'haiengandik',
+    norengana: 'haiengana',
+    norenganantz: 'haienganantz',
+    norenganaino: 'haienganaino',
+  },
+};
+
+
+export function deklinatu(
+  raiz: string,
+  kasua: Kasua,
+  zenbakia: Zenbakia,
+  izenMota: IzenMota,
+  bizigabea: boolean
+): string {
+  if (!raiz) {
+    return '';
+  }
+
+  let palabraLimpia = raiz.trim().toLowerCase();
+
+  // Bloqueo explícito: hura / haiek nunca pertenecen a pertsonaIzenOrdaina
+  if (
+    izenMota === HITZ_MOTAK.PERTSONA_IZEN_ORDAINA &&
+    ["hura", "haiek"].includes(palabraLimpia)
+  ) {
+    return "";
+  }
+
+  // Si es pertsonaIzenOrdaina o erakuslea, buscamos en FORMAK_BEREZIAK
+  if (
+    izenMota === HITZ_MOTAK.PERTSONA_IZEN_ORDAINA ||
+    izenMota === HITZ_MOTAK.ERAKUSLEA
+  ) {
+    // Bloquea casos locativos inanimados si es animado
+    if (!bizigabea && KASU_LEKUZKOAK.includes(kasua)) {
+      return "";
     }
-    let palabraLimpia = raiz.trim().toLowerCase();
-    const ultimaLetra = palabraLimpia.slice(-1);
-    const terminaEnVocal = ["a", "e", "i", "o", "u"].includes(ultimaLetra);
-    const terminaEnA = ultimaLetra === "a";
-    const terminaEnR = ultimaLetra === "r";
-    const terminaEnLoN = ["l", "n"].includes(ultimaLetra);
-    const rSuaves = [
-        "ur", "zur", "paper", "plater", "karter",
-        "lider", "txofer", "motor", "kontainer",
-        "zer", "nor", "ezer", "inor", "edonor"];
-    const doblarR = terminaEnR && !rSuaves.includes(palabraLimpia);
+    // Bloquea casos animados si es inanimado
+    if (bizigabea && KASU_BIZIDUNAK.includes(kasua)) {
+      return "";
+    }
 
-    const aOrganikoLekuak = [
+    const formaBerezia = FORMAK_BEREZIAK[palabraLimpia]?.[kasua];
+    return formaBerezia ?? "";
+  }
+
+  const ultimaLetra = palabraLimpia.slice(-1);
+  const terminaEnVocal = ["a", "e", "i", "o", "u"].includes(ultimaLetra);
+  const terminaEnA = ultimaLetra === "a";
+  const terminaEnR = ultimaLetra === "r";
+  const terminaEnLoN = ["l", "n"].includes(ultimaLetra);
+
+  const rSuaves = [
+    "ur", "zur", "paper", "plater", "karter",
+    "lider", "txofer", "motor", "kontainer",
+    "zer", "nor", "ezer", "inor", "edonor"
+  ];
+  const doblarR = terminaEnR && !rSuaves.includes(palabraLimpia);
+
+  const aOrganikoLekuak = [
     "azpeitia", "azkoitia", "hendaia", "ermua",
     "ondarroa", "bizkaia", "gipuzkoa", "nafarroa", "araba"
-    ];
+  ];
 
-    const sufijoBase = ATZIZKIAK[kasua][zenbakia];
-    let enlace = "";
+  const sufijoBase = ATZIZKIAK[kasua][zenbakia];
+  let enlace = "";
 
-    // =========================================================
-    // BLOQUE 1: Casos gramaticales (NOR - ZERTAZ)
-    // =========================================================
-    if (KASU_GRAMATIKALAK.includes(kasua)) {
+  // =========================================================
+  // BLOQUE 1: Casos gramaticales (NOR - ZERTAZ)
+  // =========================================================
+  if (KASU_GRAMATIKALAK.includes(kasua)) {
+    const zenbakiEfektiboa: Zenbakia = izenMota === "izenBerezia" ? "mugagabea" : zenbakia;
 
-        // Solo dentro de este bloque, un izenBerezia equivale a mugagabea
-        const zenbakiEfektiboa: Zenbakia = izenMota === "izenBerezia" ? "mugagabea" : zenbakia;
-        if (zenbakiEfektiboa === "mugagabea") {
-            // Si acaba en R fuerte, siempre dobla (excepto en 'nor', que no lleva sufijo)
-            if (doblarR && kasua !== "nor") enlace += "r";
+    if (zenbakiEfektiboa === "mugagabea") {
+      if (doblarR && kasua !== "nor") enlace += "r";
 
-            switch (kasua) {
-                case "nor":
-                    // Se queda igual (etxe, mutil, txakur)
-                    break;
-                case "nork":
-                case "zertaz":
-                    // Llevan 'e' solo si termina en consonante (mutilek, mutilez / etxek, etxez)
-                    if (!terminaEnVocal) enlace += "e";
+      switch (kasua) {
+        case "nor":
+          break;
+        case "nork":
+        case "zertaz":
+          if (!terminaEnVocal) enlace += "e";
+          break;
+        case "nori":
+        case "noren":
+        case "norekin":
+        case "norentzat":
+          if (terminaEnVocal) enlace += "r";
+          break;
+      }
 
-                    break;
-
-                case "nori":
-                case "noren":
-                case "norekin":
-                case "norentzat":
-                    // Llevan 'r' solo si termina en vocal (etxeri, etxeren / mutili, mutilen)
-                    if (terminaEnVocal) enlace += "r";
-                    break;
-            }
-
-            return palabraLimpia + enlace + ATZIZKIAK[kasua]["mugagabea"];
-        }
-        // 1. SINGULARRA Y PLURALA
-        else {
-            if (terminaEnA) {
-                // neska + ak -> neskak | neska + ek -> neskek
-                palabraLimpia = palabraLimpia.slice(0, -1);
-            } else if (doblarR) {
-                // txakur + a -> txakurra | txakur + ak -> txakurrak
-                enlace += "r";
-            }
-            return palabraLimpia + enlace + sufijoBase;
-        }
-
-
+      return palabraLimpia + enlace + ATZIZKIAK[kasua]["mugagabea"];
+    } else {
+      if (terminaEnA) {
+        palabraLimpia = palabraLimpia.slice(0, -1);
+      } else if (doblarR) {
+        enlace += "r";
+      }
+      return palabraLimpia + enlace + sufijoBase;
     }
-    // =========================================================
-    // BLOQUE 2: Casos locativos (NON, NONDIK, NORA, NONGO)
-    // =========================================================
+  }
 
-    // 2A. ANIMADOS (Tanto propios como comunes)
-
-    else if (izenMota === "izenBerezia") {
-        // ANIMADOS (Nombres de personas: Mikel, Ane, Aitor)
-        if (!bizigabea) {
-            if (kasua === "nongo") {
-                return deklinatu(palabraLimpia, "noren", "mugagabea", izenMota, bizigabea);
-            }
-            if (doblarR) enlace += "r";
-            if (terminaEnVocal) enlace += "r";
-            const kasuLok = kasua as 'non' | 'nondik' | 'nora' | 'norantz' | 'noraino';
-            return palabraLimpia + enlace + BIZIDUN_ATZIZKIAK[kasuLok]["mugagabea"];
-        }
-        // INANIMADOS (Nombres de lugares: Bilbo, Irun, Eibar, Donostia)
-        else {
-            if (aOrganikoLekuak.includes(palabraLimpia)) {
-                // En NON mantiene la -a (Bizkaian, Azpeitian)
-                // En el resto de casos locativos pierde la -a (Bizkaitik, Bizkaira, Bizkaiko, Bizkairantz, Bizkairaino)
-                if (["nondik", "nora", "nongo", "norantz", "noraino"].includes(kasua)) {
-                    palabraLimpia = palabraLimpia.slice(0, -1);
-                }
-            }
-
-
-            if (kasua === "nongo" && terminaEnLoN) return palabraLimpia + "go";
-            if (kasua === "nondik" && terminaEnLoN) return palabraLimpia + "dik";
-
-
-
-            if (doblarR) enlace += "r";
-
-            switch (kasua) {
-                case "non":
-                    return palabraLimpia + enlace + (terminaEnVocal ? "n" : "en");
-                case "nondik":
-                case "nora":
-                case "norantz":
-                case "noraino":
-                case "nongo":
-                default:
-                    if (!terminaEnVocal) enlace += "e";
-                    return palabraLimpia + enlace + ATZIZKIAK[kasua]["singularra"];
-            }
-        }
-    }
-    else {
-        // ANIMADOS (mutil, neska, seme, txakur)
-        if (!bizigabea) {
-            if (kasua === "nongo") {
-                return deklinatu(palabraLimpia, "noren", zenbakia, izenMota, bizigabea);
-            }
-
-            const kasuLok = kasua as 'non' | 'nondik' | 'nora' | 'norantz' | 'noraino';
-            const sufijoAnimado = BIZIDUN_ATZIZKIAK[kasuLok][zenbakia];
-
-            if (zenbakia === "singularra") {
-                if (doblarR) enlace += "r";
-                if (!terminaEnA) enlace += "a"; // mutil + a + rengan | neska + rengan
-                return palabraLimpia + enlace + sufijoAnimado;
-            }
-            else if (zenbakia === "plurala") {
-                if (terminaEnA) {
-                    palabraLimpia = palabraLimpia.slice(0, -1); // neska -> neskengan
-                } else if (doblarR) {
-                    enlace += "r"; // txakur -> txakurrengan
-                }
-                return palabraLimpia + enlace + sufijoAnimado;
-            }
-            else { // mugagabea
-                if (doblarR) enlace += "r";
-                if (terminaEnVocal) enlace += "r"; // neskarengan, semerengan
-                return palabraLimpia + enlace + sufijoAnimado;
-            }
-        }
-        // INANIMADOS (etxe, mendi, haran, hondartza, ur)
-        else {
-            if (zenbakia === "singularra") {
-                if (terminaEnA && kasua === "non") {
-                    // Solo en NON se fusiona la -a: hondartza + an -> hondartzan
-                    // En nondik/nora/nongo la mantiene: hondartzatik, hondartzara, hondartzako
-                    palabraLimpia = palabraLimpia.slice(0, -1);
-                } else if (!terminaEnVocal) {
-                    if (doblarR) enlace += "r";
-                    enlace += "e"; // haran -> haranean, haranetik
-                }
-                return palabraLimpia + enlace + sufijoBase;
-            }
-
-            else if (zenbakia === "plurala") {
-                if (terminaEnA) {
-                    palabraLimpia = palabraLimpia.slice(0, -1); // hondartza -> hondartzetan
-                } else if (doblarR) {
-                    enlace += "r";
-                }
-                return palabraLimpia + enlace + sufijoBase;
-            }
-            else { // mugagabea
-                if (!terminaEnVocal) {
-                    if (doblarR) enlace += "r";
-                    // Tras consonante usa -etan, -etatik, -etara, -etako (igual que plural)
-                    return palabraLimpia + enlace + ATZIZKIAK[kasua]["plurala"];
-                }
-                // Tras vocal usa -tan, -tatik, -tara, -tako
-                return palabraLimpia + sufijoBase;
-            }
-        }
+  // =========================================================
+  // BLOQUE 2: Casos locativos animados (NORENGAN - NORENGANAINO)
+  // Solo permitidos para sustantivos animados (!bizigabea)
+  // =========================================================
+  if (KASU_BIZIDUNAK.includes(kasua)) {
+    if (bizigabea) {
+      return "";
     }
 
+    // Izen berezi bizidunak (Mikel, Ane, Aitor)
+    if (izenMota === "izenBerezia") {
+      if (doblarR || terminaEnVocal) enlace += "r";
+      return palabraLimpia + enlace + ATZIZKIAK[kasua]["mugagabea"];
+    }
 
+    // Izen arrunt bizidunak (mutil, neska, seme, txakur)
+    if (zenbakia === "singularra") {
+      if (doblarR) enlace += "r";
+      if (!terminaEnA) enlace += "a"; // mutil + a + rengan | neska + rengan
+      return palabraLimpia + enlace + sufijoBase;
+    } else if (zenbakia === "plurala") {
+      if (terminaEnA) {
+        palabraLimpia = palabraLimpia.slice(0, -1); // neska -> neskengan
+      } else if (doblarR) {
+        enlace += "r"; // txakur -> txakurrengan
+      }
+      return palabraLimpia + enlace + sufijoBase;
+    } else {
+      // mugagabea
+      if (doblarR || terminaEnVocal) enlace += "r"; // neskarengan, semerengan
+      return palabraLimpia + enlace + sufijoBase;
+    }
+  }
+
+  // =========================================================
+  // BLOQUE 3: Casos locativos inanimados (NON - NONGO)
+  // Solo permitidos para sustantivos inanimados (bizigabea)
+  // =========================================================
+  if (KASU_LEKUZKOAK.includes(kasua)) {
+    if (!bizigabea) {
+      return "";
+    }
+
+    // Izen berezi bizigabeak (Bilbo, Irun, Eibar, Donostia)
+    if (izenMota === "izenBerezia") {
+      if (aOrganikoLekuak.includes(palabraLimpia)) {
+        if (["nondik", "nora", "nongo", "norantz", "noraino"].includes(kasua)) {
+          palabraLimpia = palabraLimpia.slice(0, -1);
+        }
+      }
+
+      if (kasua === "nongo" && terminaEnLoN) return palabraLimpia + "go";
+      if (kasua === "nondik" && terminaEnLoN) return palabraLimpia + "dik";
+
+      if (doblarR) enlace += "r";
+
+      switch (kasua) {
+        case "non":
+          return palabraLimpia + enlace + (terminaEnVocal ? "n" : "en");
+        case "nondik":
+        case "nora":
+        case "norantz":
+        case "noraino":
+        case "nongo":
+        default:
+          if (!terminaEnVocal) enlace += "e";
+          return palabraLimpia + enlace + ATZIZKIAK[kasua]["singularra"];
+      }
+    } else {
+      // Izen arrunt bizigabeak (etxe, mendi, haran, hondartza, ur)
+      if (zenbakia === "singularra") {
+        if (terminaEnA && kasua === "non") {
+          palabraLimpia = palabraLimpia.slice(0, -1);
+        } else if (!terminaEnVocal) {
+          if (doblarR) enlace += "r";
+          enlace += "e";
+        }
+        return palabraLimpia + enlace + sufijoBase;
+      } else if (zenbakia === "plurala") {
+        if (terminaEnA) {
+          palabraLimpia = palabraLimpia.slice(0, -1);
+        } else if (doblarR) {
+          enlace += "r";
+        }
+        return palabraLimpia + enlace + sufijoBase;
+      } else {
+        // mugagabea
+        if (!terminaEnVocal) {
+          if (doblarR) enlace += "r";
+          return palabraLimpia + enlace + ATZIZKIAK[kasua]["plurala"];
+        }
+        return palabraLimpia + sufijoBase;
+      }
+    }
+  }
+
+  return "";
 }
 
 export function esCombinacionValida(
@@ -244,31 +458,72 @@ export function esCombinacionValida(
   kasua: Kasua,
   zenbakia: Zenbakia
 ): boolean {
-  // Normalizamos: es animado si biziduna es true (o si bizigabe es explícitamente false)
-  const esAnimado = 'biziduna' in hitza ? Boolean(hitza.biziduna) : !(hitza as any).bizigabe;
+  const esAnimado =
+    "biziduna" in hitza ? Boolean(hitza.biziduna) : !(hitza as any).bizigabe;
+  const formaLimpia = hitza.eu.trim().toLowerCase();
 
-  if (hitza.mota === HITZ_MOTAK.IZEN_BEREZIA) {
-    if (zenbakia !== 'mugagabea') {
+  // hura / haiek solo en erakusleak, nunca en pertsonaIzenOrdaina
+  if (
+    hitza.mota === HITZ_MOTAK.PERTSONA_IZEN_ORDAINA &&
+    ["hura", "haiek"].includes(formaLimpia)
+  ) {
+    return false;
+  }
+
+  // Los sustantivos/elementos ANIMADOS no usan casos locativos inanimados
+  if (esAnimado && KASU_LEKUZKOAK.includes(kasua)) {
+    return false;
+  }
+
+  // Los sustantivos/elementos INANIMADOS no usan casos animados
+  if (!esAnimado && KASU_BIZIDUNAK.includes(kasua)) {
+    return false;
+  }
+
+  // Reglas específicas para nombres comunes INANIMADOS (izenArrunta + !esAnimado)
+  if (hitza.mota === HITZ_MOTAK.IZEN_ARRUNTA && !esAnimado) {
+    // 1. NORK solo en causas/fuerzas naturales permitidas
+    if (kasua === "nork" && !NORK_BIZIGABE_BAIMENDUAK.has(formaLimpia)) {
       return false;
     }
 
-    // Nombre propio de LUGAR (esAnimado === false) -> bloquea nori y norentzat
-    if (!esAnimado && (kasua === 'nori' || kasua === 'norentzat')) {
+    // 2. NORI y NORENTZAT bloqueados salvo excepciones puntuales (herri, hiri)
+    if (
+      (kasua === "nori" || kasua === "norentzat") &&
+      !NORI_NORENTZAT_BIZIGABE_BAIMENDUAK.has(formaLimpia)
+    ) {
       return false;
     }
 
-    // Nombre propio de PERSONA (esAnimado === true) -> bloquea nongo
-    if (esAnimado && kasua === 'nongo') {
+    // 3. NON, NONDIK, NORA, NORANTZ y NORAINO limitados a lugares/tiempos permitidos
+    if (
+      KASU_LEKUZKO_MUGIMENDU_ETA_KOKAPENA.includes(kasua) &&
+      !LEKU_ETA_DENBORA_BIZIGABE_BAIMENDUAK.has(formaLimpia)
+    ) {
       return false;
     }
   }
 
-  // Nombre común ANIMADO (esAnimado === true) -> bloquea nongo
-  if (hitza.mota === HITZ_MOTAK.IZEN_ARRUNTA && esAnimado && kasua === 'nongo') {
-    return false;
+  // Pertsona izen ordainak y erakusleak tienen un zenbakia fijo ('singularra' o 'plurala')
+  if (
+    hitza.mota === HITZ_MOTAK.PERTSONA_IZEN_ORDAINA ||
+    hitza.mota === HITZ_MOTAK.ERAKUSLEA
+  ) {
+    if (hitza.zenbakia && zenbakia !== hitza.zenbakia) {
+      return false;
+    }
+    return Boolean(FORMAK_BEREZIAK[formaLimpia]?.[kasua]);
+  }
+
+  if (hitza.mota === HITZ_MOTAK.IZEN_BEREZIA) {
+    if (zenbakia !== "mugagabea") {
+      return false;
+    }
+
+    if (!esAnimado && (kasua === "nori" || kasua === "norentzat")) {
+      return false;
+    }
   }
 
   return true;
 }
-
-
