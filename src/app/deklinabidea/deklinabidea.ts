@@ -2,7 +2,7 @@ import { Component, effect, signal } from '@angular/core';
 import { ServiceHiztegia } from '../hiztegiService';
 import { DeklinabideaFiltros } from './deklinabidea-filtros';
 import { DeklinabideaPractica } from './deklinabidea-practica';
-import { type PraktikaItem } from './deklinatu';
+import { type PraktikaItem } from '../deklinatu';
 
 @Component({
   imports: [DeklinabideaFiltros, DeklinabideaPractica],

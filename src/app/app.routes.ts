@@ -26,6 +26,11 @@ export const routes: Routes = [
     loadComponent: () => import('./deklinabidea/deklinabidea').then(m => m.Deklinabidea),
     title: 'Deklinabide Praktikatu',
   },
+  {
+    path: 'deklinabide-taulak',
+    loadComponent: () => import('./deklinabide-taulak/deklinabide-taulak').then(m => m.DeklinabideTaulak),
+    title: 'Deklinabide Taulak',
+  },
   { path: 'info', loadComponent: () => import('./info/info').then(m => m.Info), title: 'Info' },
   {
     path: 'menuAdmin',

@@ -12,7 +12,7 @@ import {
   ERLAZIOZKOAK,
   LEKUKOAK,
   BIZIDUN_KASUAK
-} from './deklinatu';
+} from '../deklinatu';
 
 export interface FiltroPalabrasConfig {
   pertsonaIzenOrdainak: boolean;

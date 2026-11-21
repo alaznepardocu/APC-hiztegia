@@ -8,6 +8,8 @@ Aplicación web para consultar y practicar vocabulario y verbos en euskera.
 - **Hiztegia:** consulta del vocabulario con filtros por nivel, curso y fecha, y búsqueda por euskera, variantes, castellano, nivel o fecha. Muestra significados, notas y variantes cuando están disponibles.
 - **Aditzak Praktikatu:** práctica de verbos trinkoak y auxiliares. Permite seleccionar verbos y tiempos (presente y pasado), seleccionar todos los trinkoak y excluir las formas de **hi/hik**.
 - **Aditza Taulak:** consulta de tablas de conjugación. Permite cambiar el orden de **ni/zu** y ocultar las formas **hi/hik**.
+- **Deklinabide Praktikatu:** práctica de declinación de nombres en los casos gramaticales, relacionales y de lugar.
+- **Deklinabide Taulak:** consulta de tablas de declinación por caso y número, con formas para nombres comunes y propios, pronombres personales y demostrativos.
 - **Administración:** en `/menuAdmin`, las cuentas autorizadas pueden iniciar sesión y gestionar el vocabulario (añadir, editar, borrar y filtrar palabras). Al añadir una palabra se selecciona el día y mes de la clase; al editarla se conserva su fecha. El acceso de escritura está protegido también por las políticas RLS de Supabase.
 - **Info:** guía de uso y formulario para reportar errores disponible en el pie de la aplicación.
 

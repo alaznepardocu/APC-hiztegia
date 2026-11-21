@@ -76,6 +76,15 @@ export interface DeklinabideHitza {
   zenbakia?: 'singularra' | 'plurala';
 }
 
+
+export interface FormaDeklinatua {
+  valido: boolean;
+  raiz: string;
+  sufijo: string;
+  completa: string;
+}
+
+
 export const PERTSONA_IZEN_ORDAINAK: readonly DeklinabideHitza[] = [
   { eu: 'ni', mota: HITZ_MOTAK.PERTSONA_IZEN_ORDAINA, bizigabe: false, zenbakia: 'singularra' },
   { eu: 'hi', mota: HITZ_MOTAK.PERTSONA_IZEN_ORDAINA, bizigabe: false, zenbakia: 'singularra' },

@@ -1,8 +1,9 @@
 import { DeklinabideHitza,
   ERAKUSLEAK,
+  FormaDeklinatua,
   HITZ_MOTAK,
   HitzMota,
-  PERTSONA_IZEN_ORDAINAK } from "../hiztegia";
+  PERTSONA_IZEN_ORDAINAK } from "./hiztegia";
 
 export type Kasua = typeof KASUAK[number];
 export type Zenbakia = 'singularra' | 'plurala' | 'mugagabea';
@@ -526,4 +527,64 @@ export function esCombinacionValida(
   }
 
   return true;
+}
+
+
+export function dividirForma(
+  palabraOriginal: string,
+  resultado: string,
+  esNombrePropio = false
+): FormaDeklinatua {
+  if (!resultado) {
+    return { valido: false, raiz: '', sufijo: '', completa: '' };
+  }
+
+  const base = palabraOriginal.trim();
+  const baseMinuscula = base.toLowerCase();
+  const resultadoMinuscula = resultado.toLowerCase();
+
+  const capitalizarInicial = (texto: string): string => {
+    if (!texto) return texto;
+    const debeCapitalizar =
+      esNombrePropio ||
+      (base.length > 0 &&
+        base[0] === base[0].toUpperCase() &&
+        base[0] !== base[0].toLowerCase());
+
+    if (!debeCapitalizar) return texto;
+    return texto[0].toUpperCase() + texto.slice(1);
+  };
+
+  // Caso 1: El resultado empieza exactamente por la palabra base (ej. "amaia" + "k" -> "Amaia" + "K", "unai" + "ek" -> "Unai" + "EK")
+  if (resultadoMinuscula.startsWith(baseMinuscula)) {
+    const raiz = capitalizarInicial(base);
+    const sufijo = resultado.slice(base.length).toUpperCase();
+
+    return {
+      valido: true,
+      raiz,
+      sufijo,
+      completa: sufijo ? `${raiz}-${sufijo}` : raiz,
+    };
+  }
+
+  // Caso 2: Hubo cambio vocálico al final (ej. "neska" -> "neskaren" o "etxe" -> "etxean")
+  let indice = 0;
+  while (
+    indice < baseMinuscula.length &&
+    indice < resultadoMinuscula.length &&
+    baseMinuscula[indice] === resultadoMinuscula[indice]
+  ) {
+    indice++;
+  }
+
+  const raiz = capitalizarInicial(resultado.slice(0, indice));
+  const sufijo = resultado.slice(indice).toUpperCase();
+
+  return {
+    valido: true,
+    raiz,
+    sufijo,
+    completa: sufijo ? `${raiz}-${sufijo}` : raiz,
+  };
 }

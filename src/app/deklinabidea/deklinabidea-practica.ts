@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { deklinatu, IzenMota, type PraktikaItem } from './deklinatu';
+import { deklinatu, IzenMota, type PraktikaItem } from '../deklinatu';
 import { normalizar } from '../utilidades';
 
 @Component({

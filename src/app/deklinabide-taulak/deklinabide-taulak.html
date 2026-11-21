@@ -1,0 +1,347 @@
+<div class="d-flex justify-content-center flex-column text-center">
+    <h1 class="text-primary">Deklinabide Taulak</h1>
+    <hr>
+    
+
+    <!-- Navegación rápida por bloques -->
+    <div class="row justify-content-between">
+        <div class="col h-100 d-flex flex-wrap text-center align-center justify-content-center p-1">
+            <button type="button" class="btn btn-outline-primary mx-3" (click)="irAID('kasu-gramatikalak')">
+                Kasu Gramatikalak
+            </button>
+            <button type="button" class="btn btn-outline-primary mx-3" (click)="irAID('kasu-lekuzkoak')">
+                Leku-kasuak (Bizigabeak)
+            </button>
+            <button type="button" class="btn btn-outline-primary mx-3" (click)="irAID('kasu-bizidunak')">
+                Leku-kasuak (Bizidunak)
+            </button>
+            <button type="button" class="btn btn-outline-primary mx-3" (click)="irAID('pertsona-izen-ordainak')">
+    Pertsona Izen Ordainak
+    </button>
+    <button type="button" class="btn btn-outline-primary mx-3" (click)="irAID('erakusleak')">
+        Erakusleak
+    </button>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- BLOQUE 1: KASU GRAMATIKALAK -->
+    <div class="container card py-3">
+        <h1 id="kasu-gramatikalak" class="text-secondary">Kasu Gramatikalak</h1>
+        <hr>
+
+        <div class="row justify-content-between">
+            <div class="col h-100 d-flex flex-wrap text-center align-center justify-content-center p-1">
+                @for (taula of taulakGramatikalak(); track taula.kasua) {
+                <button type="button" class="btn btn-outline-secondary mx-2 my-1"
+                    (click)="irAID('tabla-kasua-' + taula.kasua)">
+                    {{ taula.kasua.toUpperCase() }}
+                </button>
+                }
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row justify-content-center">
+            @for (taula of taulakGramatikalak(); track taula.kasua) {
+            <div class="col-12 col-lg-5 mt-4">
+                <div class="card p-2 my-2" [id]="'kasua-' + taula.kasua">
+                    <h3><b><u>{{ taula.izenburua }}</u></b></h3>
+                    <div class="table-responsive">
+                        <table [id]="'tabla-kasua-' + taula.kasua"
+                            class="justify-content-center table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th class="text-center">BOKALA</th>
+                                    <th class="text-center">KONTSONANTEA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (lerroa of taula.lerroak; track lerroa.zenbakiaLabel) {
+                                <tr>
+                                    <td class="text-start"><b>{{ lerroa.zenbakiaLabel }}</b></td>
+                                    <td class="text-center">
+                                        @if (lerroa.bokala.valido) {
+                                        <span>{{ lerroa.bokala.raiz }}</span>@if (lerroa.bokala.sufijo) {<b class="text-primary">-{{ lerroa.bokala.sufijo }}</b>}
+                                        } @else {
+                                        <span class="text-muted">—</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (lerroa.kontsonantea.valido) {
+                                        <span>{{ lerroa.kontsonantea.raiz }}</span>@if (lerroa.kontsonantea.sufijo) {<b class="text-primary">-{{ lerroa.kontsonantea.sufijo }}</b>}
+                                        } @else {
+                                        <span class="text-muted">—</span>
+                                        }
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- BLOQUE 2: LEKU-KASUAK (BIZIGABEAK) -->
+<div class="container card py-3">
+    <h1 id="kasu-lekuzkoak" class="text-secondary">Leku-kasuak (Bizigabeak)</h1>
+    <hr>
+
+    <div class="row justify-content-between">
+        <div class="col h-100 d-flex flex-wrap text-center align-center justify-content-center p-1">
+            @for (taula of taulakLekuzkoak(); track taula.kasua) {
+            <button type="button" class="btn btn-outline-secondary mx-2 my-1"
+                (click)="irAID('tabla-kasua-' + taula.kasua)">
+                {{ taula.kasua.toUpperCase() }}
+            </button>
+            }
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row justify-content-center">
+        @for (taula of taulakLekuzkoak(); track taula.kasua) {
+        <div class="col-12 col-lg-5 mt-4">
+            <div class="card p-2 my-2" [id]="'kasua-' + taula.kasua">
+                <h3><b><u>{{ taula.izenburua }}</u></b></h3>
+                <div class="table-responsive">
+                    <table [id]="'tabla-kasua-' + taula.kasua"
+                        class="justify-content-center table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th class="text-center">BOKALA</th>
+                                <th class="text-center">KONTSONANTEA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (lerroa of taula.lerroak; track lerroa.zenbakiaLabel) {
+                            <tr>
+                                <td class="text-start"><b>{{ lerroa.zenbakiaLabel }}</b></td>
+                                <td class="text-center">
+                                    @if (lerroa.bokala.valido) {
+                                    <span>{{ lerroa.bokala.raiz }}</span>@if (lerroa.bokala.sufijo) {<b class="text-primary">-{{ lerroa.bokala.sufijo }}</b>}
+                                    } @else {
+                                    <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (lerroa.kontsonantea.valido) {
+                                    <span>{{ lerroa.kontsonantea.raiz }}</span>@if (lerroa.kontsonantea.sufijo) {<b class="text-primary">-{{ lerroa.kontsonantea.sufijo }}</b>}
+                                    } @else {
+                                    <span class="text-muted">—</span>
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
+    <hr>
+
+    <!-- BLOQUE 3: LEKU-KASUAK (BIZIDUNAK) -->
+    <div class="container card py-3 mb-4">
+        <h1 id="kasu-bizidunak" class="text-secondary">Leku-kasuak (Bizidunak)</h1>
+        <hr>
+
+        <div class="row justify-content-between">
+            <div class="col h-100 d-flex flex-wrap text-center align-center justify-content-center p-1">
+                @for (taula of taulakBizidunak(); track taula.kasua) {
+                <button type="button" class="btn btn-outline-secondary mx-2 my-1"
+                    (click)="irAID('tabla-kasua-' + taula.kasua)">
+                    {{ taula.kasua.toUpperCase() }}
+                </button>
+                }
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row justify-content-center">
+            @for (taula of taulakBizidunak(); track taula.kasua) {
+            <div class="col-12 col-lg-5 mt-4">
+                <div class="card p-2 my-2" [id]="'kasua-' + taula.kasua">
+                    <h3><b><u>{{ taula.izenburua }}</u></b></h3>
+                    <div class="table-responsive">
+                        <table [id]="'tabla-kasua-' + taula.kasua"
+                            class="justify-content-center table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th class="text-center">BOKALA</th>
+                                    <th class="text-center">KONTSONANTEA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (lerroa of taula.lerroak; track lerroa.zenbakiaLabel) {
+                                <tr>
+                                    <td class="text-start"><b>{{ lerroa.zenbakiaLabel }}</b></td>
+                                    <td class="text-center">
+                                        @if (lerroa.bokala.valido) {
+                                        <span>{{ lerroa.bokala.raiz }}</span>@if (lerroa.bokala.sufijo) {<b class="text-primary">-{{ lerroa.bokala.sufijo }}</b>}
+                                        } @else {
+                                        <span class="text-muted">—</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (lerroa.kontsonantea.valido) {
+                                        <span>{{ lerroa.kontsonantea.raiz }}</span>@if (lerroa.kontsonantea.sufijo) {<b class="text-primary">-{{ lerroa.kontsonantea.sufijo }}</b>}
+                                        } @else {
+                                        <span class="text-muted">—</span>
+                                        }
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+    <hr>
+
+<!-- BLOQUE 4: PERTSONA IZEN ORDAINAK -->
+<div class="container card py-3">
+    <h1 id="pertsona-izen-ordainak" class="text-secondary">Pertsona Izen Ordainak</h1>
+    <hr>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 mt-3">
+            <div class="card p-2 my-2">
+                <h3><b><u>PERTSONA IZEN ORDAINAK</u></b></h3>
+                <div class="table-responsive">
+                    <table id="tabla-pertsona-izen-ordainak"
+                        class="justify-content-center table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>KASUA</th>
+                                @for (ordaina of pertsonaIzenOrdainak; track ordaina) {
+                                <th class="text-center">{{ ordaina.toUpperCase() }}</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (kasua of kasuakBereziak; track kasua) {
+                            <tr>
+                                <td class="text-start"><b>{{ kasua.toUpperCase() }}</b></td>
+                                @for (ordaina of pertsonaIzenOrdainak; track ordaina) {
+                                <td class="text-center">
+                                    {{ obtenerFormaBerezia(ordaina, kasua) }}
+                                </td>
+                                }
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr>
+
+<!-- BLOQUE 5: ERAKUSLEAK -->
+<div class="container card py-3 mb-4">
+    <h1 id="erakusleak" class="text-secondary">Erakusleak</h1>
+    <hr>
+
+    <div class="row justify-content-between">
+        <div class="col h-100 d-flex flex-wrap text-center align-center justify-content-center p-1">
+            <button type="button" class="btn btn-outline-secondary mx-2 my-1"
+                (click)="irAID('tabla-erakusleak-singularra')">
+                SINGULARRA (Hau / Hori / Hura)
+            </button>
+            <button type="button" class="btn btn-outline-secondary mx-2 my-1"
+                (click)="irAID('tabla-erakusleak-plurala')">
+                PLURALA (Hauek / Horiek / Haiek)
+            </button>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row justify-content-center">
+        <!-- Erakusleak Singularra -->
+        <div class="col-12 col-lg-6 mt-4">
+            <div class="card p-2 my-2">
+                <h3><b><u>SINGULARRA</u></b></h3>
+                <div class="table-responsive">
+                    <table id="tabla-erakusleak-singularra"
+                        class="justify-content-center table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>KASUA</th>
+                                @for (erakuslea of erakusleakSingularra; track erakuslea) {
+                                <th class="text-center">{{ erakuslea.toUpperCase() }}</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (kasua of kasuakBereziak; track kasua) {
+                            <tr>
+                                <td class="text-start"><b>{{ kasua.toUpperCase() }}</b></td>
+                                @for (erakuslea of erakusleakSingularra; track erakuslea) {
+                                <td class="text-center">
+                                    {{ obtenerFormaBerezia(erakuslea, kasua) }}
+                                </td>
+                                }
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Erakusleak Plurala -->
+        <div class="col-12 col-lg-6 mt-4">
+            <div class="card p-2 my-2">
+                <h3><b><u>PLURALA</u></b></h3>
+                <div class="table-responsive">
+                    <table id="tabla-erakusleak-plurala"
+                        class="justify-content-center table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>KASUA</th>
+                                @for (erakuslea of erakusleakPlurala; track erakuslea) {
+                                <th class="text-center">{{ erakuslea.toUpperCase() }}</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (kasua of kasuakBereziak; track kasua) {
+                            <tr>
+                                <td class="text-start"><b>{{ kasua.toUpperCase() }}</b></td>
+                                @for (erakuslea of erakusleakPlurala; track erakuslea) {
+                                <td class="text-center">
+                                    {{ obtenerFormaBerezia(erakuslea, kasua) }}
+                                </td>
+                                }
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
