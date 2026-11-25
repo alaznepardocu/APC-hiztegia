@@ -1,175 +1,51 @@
 <div class="card p-3">
   <h1 class="text-primary text-center">Deklinabidea a estudiar</h1>
   <hr>
-<!-- SECCIÓN 1: SELECTOR DE PALABRAS -->
-  <div class="card border px-4 py-3 mb-3">
-    <h2 class="m-0">Hitzak</h2>
+
+  <div class="card px-4 py-3 mb-3">
+    <h2>Kasuak</h2>
+
     <div class="d-flex justify-content-center py-2">
-      
       <div class="form-check">
         <input
           class="form-check-input"
           type="checkbox"
-          id="todas-palabras"
-          [checked]="todasPalabrasSeleccionadas"
-          (change)="seleccionarTodasPalabras($any($event.target).checked)">
-        <label class="form-check-label fw-bold" for="todas-palabras">Seleccionar todas las hitzak</label>
+          id="todos-kasuak"
+          [checked]="todosDeklinabideSeleccionado"
+          (change)="seleccionarTodoDeklinabide($any($event.target).checked)">
+        <label class="form-check-label fw-bold" for="todos-kasuak">Seleccionar todos los kasuak</label>
       </div>
     </div>
-
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 py-2">
-      <!-- Pertsona izen ordainak -->
-      <div class="col">
-        <div class="form-check d-flex align-items-center gap-2 border rounded p-2 h-100">
-          <input
-            class="form-check-input m-0 flex-shrink-0"
-            type="checkbox"
-            id="filtro-pertsona-ordainak"
-            [(ngModel)]="filtroPalabras.pertsonaIzenOrdainak">
-          <label class="form-check-label" for="filtro-pertsona-ordainak">
-            Pertsona izen ordainak<br><small class="text-muted">(ni, hi, zu, gu, zuek)</small>
-          </label>
-        </div>
-      </div>
-
-      <!-- Erakusleak -->
-      <div class="col">
-        <div class="form-check d-flex align-items-center gap-2 border rounded p-2 h-100">
-          <input
-            class="form-check-input m-0 flex-shrink-0"
-            type="checkbox"
-            id="filtro-erakusleak"
-            [(ngModel)]="filtroPalabras.erakusleak">
-          <label class="form-check-label" for="filtro-erakusleak">
-            Erakusleak<br><small class="text-muted">(hau, hori, hura...)</small>
-          </label>
-        </div>
-      </div>
-
-      <!-- Izen bereziak: Lekua -->
-      <div class="col">
-        <div class="form-check d-flex align-items-center gap-2 border rounded p-2 h-100">
-          <input
-            class="form-check-input m-0 flex-shrink-0"
-            type="checkbox"
-            id="filtro-berezia-lekua"
-            [(ngModel)]="filtroPalabras.izenBereziaLekua">
-          <label class="form-check-label" for="filtro-berezia-lekua">
-            Leku Izen Bereziak<br><small class="text-muted">(bizigabe)</small>
-          </label>
-        </div>
-      </div>
-
-      <!-- Izen bereziak: Pertsona -->
-      <div class="col">
-        <div class="form-check d-flex align-items-center gap-2 border rounded p-2 h-100">
-          <input
-            class="form-check-input m-0 flex-shrink-0"
-            type="checkbox"
-            id="filtro-berezia-pertsona"
-            [(ngModel)]="filtroPalabras.izenBereziaPertsona">
-          <label class="form-check-label" for="filtro-berezia-pertsona">
-            Pertsona Izen Bereziak<br><small class="text-muted">(bizidun)</small>
-          </label>
-        </div>
-      </div>
-
-      <!-- Izen arruntak: Bizigabe -->
-      <div class="col">
-        <div class="form-check d-flex align-items-center gap-2 border rounded p-2 h-100">
-          <input
-            class="form-check-input m-0 flex-shrink-0"
-            type="checkbox"
-            id="filtro-arrunta-bizigabe"
-            [(ngModel)]="filtroPalabras.izenArruntaBizigabe">
-          <label class="form-check-label" for="filtro-arrunta-bizigabe">
-            Izen Arruntak<br>Bizigabeak
-          </label>
-        </div>
-      </div>
-
-      <!-- Izen arruntak: Bizidun -->
-      <div class="col">
-        <div class="form-check d-flex align-items-center gap-2 border rounded p-2 h-100">
-          <input
-            class="form-check-input m-0 flex-shrink-0"
-            type="checkbox"
-            id="filtro-arrunta-bizidun"
-            [(ngModel)]="filtroPalabras.izenArruntaBizidun">
-          <label class="form-check-label" for="filtro-arrunta-bizidun">
-            Izen Arruntak<br>Bizidunak
-          </label>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SECCIÓN 2: SELECTOR DE ZENBAKIAK (SINGULAR / PLURAL / MUGAGABE) -->
-  <div class="card px-4 py-3 mb-3">
-    <h2 class="m-0">Zenbakiak</h2>
-    <div class="d-flex justify-content-center py-2">
-      
-      <div class="form-check">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          id="todos-zenbakiak"
-          [checked]="todosZenbakiakSeleccionados"
-          (change)="seleccionarTodosZenbakiak($any($event.target).checked)">
-        <label class="form-check-label fw-bold" for="todos-zenbakiak">Seleccionar todos</label>
-      </div>
-    </div>
-
-    <div class="row row-cols-1 row-cols-sm-3 g-3 py-2 justify-content-center">
-      @for (aukera of zenbakiAukerak; track aukera.valor; let i = $index) {
-        <div class="col">
-          <div class="form-check d-flex align-items-center justify-content-center gap-2 border rounded p-2 h-100">
-            <input
-              class="form-check-input m-0 flex-shrink-0"
-              type="checkbox"
-              [checked]="zenbakiakSeleccionados[aukera.valor]"
-              (change)="onChangeZenbakia(aukera.valor, $any($event.target).checked)"
-              id="zenbakia-{{i}}">
-            <label class="form-check-label" for="zenbakia-{{i}}">{{ aukera.etiqueta }}</label>
-          </div>
-        </div>
-      }
-    </div>
-  </div>
-
-  <div class="card px-4 py-3 mb-3">
-  <h2>Kasuak</h2>
-
-  <div class="d-flex justify-content-center py-2">
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" id="todos-kasuak" [checked]="todosDeklinabideSeleccionado"
-        (change)="seleccionarTodoDeklinabide($any($event.target).checked)">
-      <label class="form-check-label fw-bold" for="todos-kasuak">Seleccionar todos los kasuak</label>
-    </div>
-  </div>
-  <hr>
+    <hr>
 
     <!-- BLOQUE: OINARRIZKOAK -->
     <h3 class="m-0">oinarrizkoak</h3>
     <div class="d-flex justify-content-center py-2">
-      
       <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="todos-oinarrizkoak"
-          [checked]="isBloqueSeleccionado(oinarrizkoak)" [indeterminate]="isBloqueIndeterminado(oinarrizkoak)"
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="todos-oinarrizkoak"
+          [checked]="isBloqueSeleccionado(oinarrizkoak)"
+          [indeterminate]="isBloqueIndeterminado(oinarrizkoak)"
           (change)="seleccionarBloque(oinarrizkoak, $any($event.target).checked)">
         <label class="form-check-label" for="todos-oinarrizkoak">Seleccionar bloque</label>
       </div>
     </div>
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3 py-2 align-center justify-content-center">
       @for (kasu of oinarrizkoak; track kasu; let i = $index) {
-      <div class="col">
-        <div class="form-check d-flex align-items-center justify-content-center gap-2 border rounded p-2 h-100">
-          <input class="form-check-input m-0 flex-shrink-0" [checked]="kasuakAEstudiar.includes(kasu)"
-            (change)="onChangeKasu(kasu, $any($event.target).checked)" name="{{kasu}}" type="checkbox"
-            id="oinarrizkoak-{{i}}">
-          <label class="form-check-label text-center" for="oinarrizkoak-{{i}}">{{kasu}}</label>
+        <div class="col">
+          <div class="form-check d-flex align-items-center justify-content-center gap-2 border rounded p-2 h-100">
+            <input
+              class="form-check-input m-0 flex-shrink-0"
+              [checked]="kasuakAEstudiar.includes(kasu)"
+              (change)="onChangeKasu(kasu, $any($event.target).checked)"
+              [name]="kasu"
+              type="checkbox"
+              id="oinarrizkoak-{{i}}">
+            <label class="form-check-label text-center" for="oinarrizkoak-{{i}}">{{kasu}}</label>
+          </div>
         </div>
-      </div>
       }
     </div>
 
@@ -177,34 +53,44 @@
     <!-- BLOQUE: ERLAZIOZKOAK -->
     <h3 class="m-0">erlaziozkoak</h3>
     <div class="d-flex justify-content-center py-2">
-      
       <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="todos-erlaziozkoak"
-          [checked]="isBloqueSeleccionado(erlaziozkoak)" [indeterminate]="isBloqueIndeterminado(erlaziozkoak)"
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="todos-erlaziozkoak"
+          [checked]="isBloqueSeleccionado(erlaziozkoak)"
+          [indeterminate]="isBloqueIndeterminado(erlaziozkoak)"
           (change)="seleccionarBloque(erlaziozkoak, $any($event.target).checked)">
         <label class="form-check-label" for="todos-erlaziozkoak">Seleccionar bloque</label>
       </div>
     </div>
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3 py-2 align-center justify-content-center">
       @for (kasu of erlaziozkoak; track kasu; let i = $index) {
-      <div class="col">
-        <div class="form-check d-flex align-items-center justify-content-center gap-2 border rounded p-2 h-100">
-          <input class="form-check-input m-0 flex-shrink-0" [checked]="kasuakAEstudiar.includes(kasu)"
-            (change)="onChangeKasu(kasu, $any($event.target).checked)" name="{{kasu}}" type="checkbox"
-            id="erlaziozkoak-{{i}}">
-          <label class="form-check-label text-center" for="erlaziozkoak-{{i}}">{{kasu}}</label>
+        <div class="col">
+          <div class="form-check d-flex align-items-center justify-content-center gap-2 border rounded p-2 h-100">
+            <input
+              class="form-check-input m-0 flex-shrink-0"
+              [checked]="kasuakAEstudiar.includes(kasu)"
+              (change)="onChangeKasu(kasu, $any($event.target).checked)"
+              [name]="kasu"
+              type="checkbox"
+              id="erlaziozkoak-{{i}}">
+            <label class="form-check-label text-center" for="erlaziozkoak-{{i}}">{{kasu}}</label>
+          </div>
         </div>
-      </div>
       }
     </div>
 
     <hr>
     <!-- BLOQUE: LEKUKOAK -->
-     <h3 class="m-0">lekukoak</h3>
+    <h3 class="m-0">lekukoak</h3>
     <div class="d-flex justify-content-center py-2">
-      
       <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="todos-lekukoak" [checked]="isBloqueSeleccionado(lekukoak)"
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="todos-lekukoak"
+          [checked]="isBloqueSeleccionado(lekukoak)"
           [indeterminate]="isBloqueIndeterminado(lekukoak)"
           (change)="seleccionarBloque(lekukoak, $any($event.target).checked)">
         <label class="form-check-label" for="todos-lekukoak">Seleccionar bloque</label>
@@ -212,24 +98,31 @@
     </div>
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3 py-2 align-center justify-content-center">
       @for (kasu of lekukoak; track kasu; let i = $index) {
-      <div class="col">
-        <div class="form-check d-flex align-items-center justify-content-center gap-2 border rounded p-2 h-100">
-          <input class="form-check-input m-0 flex-shrink-0" [checked]="kasuakAEstudiar.includes(kasu)"
-            (change)="onChangeKasu(kasu, $any($event.target).checked)" name="{{kasu}}" type="checkbox"
-            id="lekukoak-{{i}}">
-          <label class="form-check-label text-center" for="lekukoak-{{i}}">{{kasu}}</label>
+        <div class="col">
+          <div class="form-check d-flex align-items-center justify-content-center gap-2 border rounded p-2 h-100">
+            <input
+              class="form-check-input m-0 flex-shrink-0"
+              [checked]="kasuakAEstudiar.includes(kasu)"
+              (change)="onChangeKasu(kasu, $any($event.target).checked)"
+              [name]="kasu"
+              type="checkbox"
+              id="lekukoak-{{i}}">
+            <label class="form-check-label text-center" for="lekukoak-{{i}}">{{kasu}}</label>
+          </div>
         </div>
-      </div>
       }
     </div>
 
     <hr>
     <!-- BLOQUE: BIZIDUNAK -->
-     <h3 class="m-0">bizidunak</h3>
+    <h3 class="m-0">bizidunak</h3>
     <div class="d-flex justify-content-center py-2">
-      
       <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="todos-bizidunak" [checked]="isBloqueSeleccionado(bizidunak)"
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="todos-bizidunak"
+          [checked]="isBloqueSeleccionado(bizidunak)"
           [indeterminate]="isBloqueIndeterminado(bizidunak)"
           (change)="seleccionarBloque(bizidunak, $any($event.target).checked)">
         <label class="form-check-label" for="todos-bizidunak">Seleccionar bloque</label>
@@ -237,33 +130,45 @@
     </div>
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3 py-2 align-center justify-content-center">
       @for (kasu of bizidunak; track kasu; let i = $index) {
-      <div class="col">
-        <div class="form-check d-flex align-items-center justify-content-center gap-2 border rounded p-2 h-100">
-          <input class="form-check-input m-0 flex-shrink-0" [checked]="kasuakAEstudiar.includes(kasu)"
-            (change)="onChangeKasu(kasu, $any($event.target).checked)" name="{{kasu}}" type="checkbox"
-            id="bizidunak-{{i}}">
-          <label class="form-check-label text-center" for="bizidunak-{{i}}">{{kasu}}</label>
+        <div class="col">
+          <div class="form-check d-flex align-items-center justify-content-center gap-2 border rounded p-2 h-100">
+            <input
+              class="form-check-input m-0 flex-shrink-0"
+              [checked]="kasuakAEstudiar.includes(kasu)"
+              (change)="onChangeKasu(kasu, $any($event.target).checked)"
+              [name]="kasu"
+              type="checkbox"
+              id="bizidunak-{{i}}">
+            <label class="form-check-label text-center" for="bizidunak-{{i}}">{{kasu}}</label>
+          </div>
         </div>
-      </div>
       }
     </div>
-    </div>
+  </div>
 
-    @if (kasuakAEstudiar.length > 0 && hitzakAEstudiar.length > 0) {
+  @if (kasuakAEstudiar.length > 0 && hitzakAEstudiar.length > 0) {
     <p class="mt-3 text-center">
-      Kasuak seleccionados: <strong>{{kasuakAEstudiar.length}}</strong> |
-      Palabras disponibles: <strong>{{hitzakAEstudiar.length}}</strong>
-      <input type="number" class="form-control w-25 mx-auto my-2 text-center" name="nPractica" min="1" placeholder="1"
+      Kasuak seleccionados: <strong>{{ kasuakAEstudiar.length }}</strong> |
+      Palabras disponibles: <strong>{{ hitzakAEstudiar.length }}</strong><br>
+      Nº de palabras por kasu (por singularra, plurala y mugagabea):
+      <input
+        type="number"
+        class="form-control w-25 mx-auto my-2 text-center"
+        name="nPractica"
+        min="3"
+        placeholder="3"
         [(ngModel)]="nPractica">
 
-      Número de palabras de sesión de estudio: {{kasuakAEstudiar.length*nPractica}}
+      Número de palabras de sesión de estudio: <strong>{{ totalEjerciciosEstimados }}</strong><br>
+      <small class="text-muted">
+        Se incluyen al menos 1 de singularra, 1 de plurala y 1 de mugagabea por kasu (mín. 3 por kasu).
+      </small>
     </p>
 
     <button class="btn btn-danger w-100" (click)="iniciarPractica()">Hasi</button>
-    } @else {
+  } @else {
     <p class="text-danger text-center mt-3">
-      {{textoFiltrado || 'Selecciona al menos un kasu para comenzar'}}
+      {{ textoFiltrado || 'Selecciona al menos un kasu para comenzar' }}
     </p>
-    }
-  
+  }
 </div>

@@ -58,8 +58,13 @@ export class DeklinabideaPractica implements OnInit {
 
   }
 
-  pasarPalabra(): void {
-    this.moverAlFinal();
+pasarPalabra(): void {
+    if (this.ejerciciosPendientes.length === 0) {
+      return;
+    }
+    if (!this.acertado) {
+      this.moverAlFinal();
+    }
     this.sacarPalabra();
   }
 
@@ -95,11 +100,6 @@ export class DeklinabideaPractica implements OnInit {
         this.textoAcierto = 'Zorionak!<br> Has adivinado todas las palabras.';
       }
       return;
-    } else {
-      const fallado = this.ejerciciosPendientes.shift();
-      if (fallado) {
-        this.ejerciciosPendientes.push(fallado);
-      }
     }
 
     this.intentos--;

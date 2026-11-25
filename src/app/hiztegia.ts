@@ -72,7 +72,7 @@ export interface DeklinabideHitza {
   eu: string;
   mota: HitzMota;
   bizigabe: boolean;
-  /** Obligatorio para pertsona izen ordainak y erakusleak (singularra / plurala) */
+  leku?: boolean;
   zenbakia?: 'singularra' | 'plurala';
 }
 
