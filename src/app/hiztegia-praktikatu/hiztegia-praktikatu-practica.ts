@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Hitz } from '../hiztegia';
+import { Hitz, ResultadoExamen } from '../hiztegia';
 import { esCorrecta } from '../utilidades';
 
 const palabraVacia = (): Hitz => ({ eu: '', es: [], maila: '', ikasturtea: 0, data: '' });
@@ -14,6 +14,7 @@ export class HiztegiaPraktikatuPractica implements OnInit {
   @ViewChild('primerInput') primerInput?: ElementRef<HTMLInputElement>;
   @Input() modo = 'Euskara';
   @Input() palabrasAEstudiar: Hitz[] = [];
+  @Input() modoExamen: boolean = false;;
   palabraSeleccionada: Hitz = palabraVacia();
   nPalabras = 0;
   palabraIntroducida = '';
@@ -21,7 +22,11 @@ export class HiztegiaPraktikatuPractica implements OnInit {
   acertado = false;
   textoAcierto = '';
   classTextoAcierto = 'text-center';
+  textoFin = '';
+  classTextoFin = 'text-center text-success fw-bold fs-2';
   solucion = '';
+  falladas = 0;
+  listaAciertosYFallos: ResultadoExamen[] = [];
   @Output() reset = new EventEmitter<void>();
 
   ngOnInit(): void {
@@ -87,23 +92,55 @@ export class HiztegiaPraktikatuPractica implements OnInit {
       : [this.palabraSeleccionada.eu, ...(this.palabraSeleccionada.eu_alt ?? [])];
     this.acertado = esCorrecta(aceptadas, this.palabraIntroducida);
 
-    if (this.acertado) {
+          if (this.acertado) {
       this.textoAcierto = '<strong>Oso ondo!</strong><br>';
       this.solucion = this.respuestaTotal;
       this.classTextoAcierto = 'text-center text-success fw-bold fs-2';
       this.palabrasAEstudiar.splice(this.palabrasAEstudiar.indexOf(this.palabraSeleccionada), 1);
       this.palabraIntroducida = '';
-      // No vaciamos palabraSeleccionada aquí para que no desaparezca el enunciado de arriba al acertar
+
+      if (this.modoExamen) {
+        this.listaAciertosYFallos.push({ palabra: this.palabraSeleccionada, acertado: true });
+      }
+
       if (this.palabrasAEstudiar.length === 0) {
-        this.textoAcierto = 'Zorionak!<br> Has adivinado todas las palabras.';
+        this.textoFin = this.modoExamen
+          ? `Azterketa bukatuta!<br>Asmatutakoak: ${this.nPalabras - this.falladas} / ${this.nPalabras}`
+          : 'Zorionak!<br> Has adivinado todas las palabras.';
       }
       return;
     }
 
     this.intentos--;
-    this.textoAcierto = this.intentos > 0 ? 'Intentalo de nuevo' : '';
-    this.textoAcierto += this.intentos > 0 ? `<br>Intentos restantes: ${this.intentos}` : '';
-    this.classTextoAcierto = 'text-center text-info';
+
+    if (this.intentos > 0) {
+      this.textoAcierto = `Intentalo de nuevo<br>Intentos restantes: ${this.intentos}`;
+      this.classTextoAcierto = 'text-center text-info';
+    } else {
+      this.textoAcierto = '';
+      if (this.modoExamen) {
+        this.falladas++;
+        this.listaAciertosYFallos.push({ palabra: this.palabraSeleccionada, acertado: false });
+        this.palabrasAEstudiar.splice(this.palabrasAEstudiar.indexOf(this.palabraSeleccionada), 1);
+
+        if (this.palabrasAEstudiar.length === 0) {
+          this.textoFin = `Azterketa bukatuta!<br>Asmatutakoak: ${this.nPalabras - this.falladas} / ${this.nPalabras}`;
+        }
+      }
+    }
+
+     if (this.palabrasAEstudiar.length === 0 && this.modoExamen) {
+      if(this.falladas === this.nPalabras/2){
+         this.classTextoFin = 'text-center text-warning fw-bold fs-2';
+      }
+      else if(this.falladas > this.nPalabras/2){
+        this.classTextoFin = 'text-center text-danger fw-bold fs-2';
+      }
+
+     }
+
+
+
   }
 
   public enfocarInput(): void {

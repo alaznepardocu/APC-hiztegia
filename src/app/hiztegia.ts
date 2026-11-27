@@ -70,3 +70,35 @@ export interface DeklinabideHitza {
   bizigabe: boolean;
 }
 
+
+export interface FormaDeklinatua {
+  valido: boolean;
+  raiz: string;
+  sufijo: string;
+  completa: string;
+}
+
+export interface ResultadoExamen {
+  palabra: Hitz;
+  acertado: boolean;
+}
+
+
+
+export const PERTSONA_IZEN_ORDAINAK: readonly DeklinabideHitza[] = [
+  { eu: 'ni', mota: HITZ_MOTAK.PERTSONA_IZEN_ORDAINA, bizigabe: false, zenbakia: 'singularra' },
+  { eu: 'hi', mota: HITZ_MOTAK.PERTSONA_IZEN_ORDAINA, bizigabe: false, zenbakia: 'singularra' },
+  { eu: 'zu', mota: HITZ_MOTAK.PERTSONA_IZEN_ORDAINA, bizigabe: false, zenbakia: 'singularra' },
+  { eu: 'gu', mota: HITZ_MOTAK.PERTSONA_IZEN_ORDAINA, bizigabe: false, zenbakia: 'plurala' },
+  { eu: 'zuek', mota: HITZ_MOTAK.PERTSONA_IZEN_ORDAINA, bizigabe: false, zenbakia: 'plurala' },
+] as const;
+
+export const ERAKUSLEAK: readonly DeklinabideHitza[] = [
+  { eu: 'hau', mota: HITZ_MOTAK.ERAKUSLEA, bizigabe: false, zenbakia: 'singularra' },
+  { eu: 'hori', mota: HITZ_MOTAK.ERAKUSLEA, bizigabe: false, zenbakia: 'singularra' },
+  { eu: 'hura', mota: HITZ_MOTAK.ERAKUSLEA, bizigabe: false, zenbakia: 'singularra' },
+  { eu: 'hauek', mota: HITZ_MOTAK.ERAKUSLEA, bizigabe: false, zenbakia: 'plurala' },
+  { eu: 'horiek', mota: HITZ_MOTAK.ERAKUSLEA, bizigabe: false, zenbakia: 'plurala' },
+  { eu: 'haiek', mota: HITZ_MOTAK.ERAKUSLEA, bizigabe: false, zenbakia: 'plurala' },
+] as const;
+

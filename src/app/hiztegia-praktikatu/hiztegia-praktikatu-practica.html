@@ -6,42 +6,62 @@
     @if(!acertado){
     <p class="fs-2 text-center pb-2">
         @if (modo === "Euskara") {
-            {{palabraSeleccionada.eu.toLowerCase()}} 
-            @if (palabraSeleccionada.eu_alt != null && palabraSeleccionada.eu_alt.length > 0){
-                / {{palabraSeleccionada.eu_alt.join(' / ').toLowerCase()}}
-            }
-            @if(palabraSeleccionada.notaeu){
-                ({{palabraSeleccionada.notaeu}})
-            }
+        {{palabraSeleccionada.eu.toLowerCase()}}
+        @if (palabraSeleccionada.eu_alt != null && palabraSeleccionada.eu_alt.length > 0){
+        / {{palabraSeleccionada.eu_alt.join(' / ').toLowerCase()}}
+        }
+        @if(palabraSeleccionada.notaeu){
+        ({{palabraSeleccionada.notaeu}})
+        }
         } @else {
-            {{palabraSeleccionada.es.join(' / ')}}
-            @if(palabraSeleccionada.notaes){
-                ({{palabraSeleccionada.notaes}})
-            }
+        {{palabraSeleccionada.es.join(' / ')}}
+        @if(palabraSeleccionada.notaes){
+        ({{palabraSeleccionada.notaes}})
+        }
         }
     </p>
     }
 
     @if (intentos > 0 && !acertado) {
-        <form class="input-group mb-3 w-100" (ngSubmit)="probar()">
-            <input #primerInput type="text" class="form-control" name="erderaz" placeholder="hitz"
-                [(ngModel)]="palabraIntroducida">
-            <button class="btn btn-warning" type="submit">Saiatu</button>
-            <button class="btn btn-outline-secondary" type="button"
-                (click)="palabraIntroducida = ''">X</button>
-        </form>
+    <form class="input-group mb-3 w-100" (ngSubmit)="probar()">
+        <input #primerInput type="text" class="form-control" name="erderaz" placeholder="hitz"
+            [(ngModel)]="palabraIntroducida">
+        <button class="btn btn-warning" type="submit">Saiatu</button>
+        <button class="btn btn-outline-secondary" type="button" (click)="palabraIntroducida = ''">X</button>
+    </form>
     }
     <p class="text-center fs-2">{{solucion}}</p>
     <p [class]="classTextoAcierto" [innerHTML]="textoAcierto"></p>
     @if (intentos === 0) {
-        <p class="fs-4 text-center text-danger">La solución era:<br><b>{{respuestaVisible.toLowerCase()}}</b></p>
+    <p class="fs-4 text-center text-danger">La solución era:<br><b>{{respuestaVisible.toLowerCase()}}</b></p>
     }
+    <p [class]="classTextoFin" [innerHTML]="textoFin"></p>
 </div>
 <hr>
-<div class="d-grid gap-between-5">
-    @if (palabrasAEstudiar.length > 0) {
-        <br><button class="btn btn-secondary" (click)="sacarPalabra()">Beste Hitz Bat</button>
+<div class="d-grid gap-2">
+    @if (palabrasAEstudiar.length > 0 && (!modoExamen || acertado || intentos === 0)) {
+    <button class="btn btn-secondary" (click)="sacarPalabra()">Beste Hitz Bat</button>
     }
+
     <p class="text-center">Palabras restantes: {{palabrasAEstudiar.length}} / {{nPalabras}}</p>
     <button class="btn btn-danger" (click)="reset.emit()">Reset</button>
+    @if (modoExamen && palabrasAEstudiar.length === 0) {
+    <ul class="list-group mt-3">
+        @for (item of listaAciertosYFallos; track $index) {
+        <li class="list-group-item d-flex justify-content-between align-items-center"
+            [class.list-group-item-success]="item.acertado" [class.list-group-item-danger]="!item.acertado">
+            <span>
+                <strong>{{ item.palabra.eu }}
+                    @if (item.palabra.eu_alt != null && item.palabra.eu_alt.length > 0){
+                    / {{item.palabra.eu_alt.join(' / ').toLowerCase()}}
+                    }</strong> = {{ item.palabra.es.join(' / ') }}
+                @if(item.palabra.notaes){
+                ({{item.palabra.notaes}})
+                }
+            </span>
+            <span>{{ item.acertado ? '✅' : '❌' }}</span>
+        </li>
+        }
+    </ul>
+    }
 </div>

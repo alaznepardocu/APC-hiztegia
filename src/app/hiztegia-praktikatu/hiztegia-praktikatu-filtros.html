@@ -1,20 +1,19 @@
 <div #panelFiltros class="card px-2 py-5">
     <div class="btn-group mb-3 w-100" role="group" aria-label="Basic radio toggle button group">
-        <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off"
-            [(ngModel)]="modo" value="Euskara">
+        <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" [(ngModel)]="modo"
+            value="Euskara">
         <label class="btn btn-outline-primary" for="btnradio1">Euskara</label>
 
-        <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off"
-            [(ngModel)]="modo" value="Gaztelaina">
+        <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off" [(ngModel)]="modo"
+            value="Gaztelaina">
         <label class="btn btn-outline-primary" for="btnradio2">Gaztelaina</label>
     </div>
     <div class="row row-cols-1 row-cols-md-3 justify-content-center py-2">
         <div class="col d-flex align-items-center justify-content-center gap-2 p-2">
             <b>Nivel: </b>
-            <select id="nivel" name="nivel" [ngModel]="nivelSeleccionado"
-                (ngModelChange)="cambiarNivel($event)">
+            <select id="nivel" name="nivel" [ngModel]="nivelSeleccionado" (ngModelChange)="cambiarNivel($event)">
                 @for (nivel of serviceHiztegia.niveles(); track $index) {
-                    <option [value]="nivel">{{nivel}}</option>
+                <option [value]="nivel">{{nivel}}</option>
                 }
             </select>
         </div>
@@ -23,26 +22,51 @@
             <select id="ikasturtea" name="ikasturtea" [ngModel]="ikasturteaSeleccionada"
                 (ngModelChange)="cambiarIkasturtea($event)">
                 @for (ikasturtea of serviceHiztegia.ikasturteak(); track $index) {
-                    <option [value]="ikasturtea">{{ikasturtea}}</option>
+                <option [value]="ikasturtea">{{ikasturtea}}</option>
                 }
             </select>
         </div>
         <div class="col d-flex align-items-center justify-content-center gap-2 p-2">
             <b>Fecha: </b>
-            <select id="fecha" name="fecha" [ngModel]="fechaSeleccionada"
-                (ngModelChange)="cambiarFecha($event)">
+            <select id="fecha" name="fecha" [ngModel]="fechaSeleccionada" (ngModelChange)="cambiarFecha($event)">
                 @for (fecha of fechasDisponibles; track $index) {
-                    <option [value]="fecha">{{ fecha === 'Todos' ? fecha : formatearFecha(fecha) }}</option>
+                <option [value]="fecha">{{ fecha === 'Todos' ? fecha : formatearFecha(fecha) }}</option>
                 }
             </select>
         </div>
     </div>
-    <div class="text-center py-2">
-        <p>Número de palabras: {{nPalabras}}</p>
+    <div class="border rounded p-2 d-flex align-items-center justify-content-between gap-3 w-auto mx-auto">
+    <div class="form-check mb-0 text-nowrap">
+        <input 
+            id="modoExamen" 
+            class="form-check-input" 
+            type="checkbox" 
+            [(ngModel)]="modoExamen">
+        <label class="form-check-label" for="modoExamen">
+            Modo Examen
+        </label>
     </div>
+    
+    @if (modoExamen) {
+    <label class="input-group input-group-sm w-auto fw-semibold">
+        <span class="input-group-text">Zenbat Hitzak?</span>
+        <input class="form-control" type="number" min="1" [max]="nPalabras" step="1"
+            [(ngModel)]="nPalabrasExamen" />
+    </label>
+    }
+</div>
+
+
+<div class="text-center pb-2 pt-5">
+    @if (modoExamen) {
+        <p class="mb-1">Palabras en el examen: <strong>{{ palabrasRealesExamen }}</strong></p>
+    }
+    <p class="mb-0">Número de palabras{{ modoExamen ? ' disponibles' : '' }}: <strong>{{ nPalabras }}</strong></p>
+</div>
+
     @if (nPalabras > 0) {
-        <button class="btn btn-danger w-100" (click)="iniciarPractica()">Hasi</button>
+    <button class="btn btn-danger w-100" (click)="iniciarPractica()">Hasi</button>
     } @else {
-        <p class="text-danger text-center">No hay palabras con esos filtros</p>
+    <p class="text-danger text-center">No hay palabras con esos filtros</p>
     }
 </div>

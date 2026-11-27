@@ -12,7 +12,11 @@ import { HiztegiaPraktikatuPractica } from './hiztegia-praktikatu-practica';
 })
 export class HiztegiaPraktikatu {
   pantalla = signal<'cargando' | 'filtros' | 'practicando'>('cargando');
-  sesionPractica: { palabras: Hitz[]; modo: string } = { palabras: [], modo: 'Euskara' };
+  sesionPractica: { palabras: Hitz[]; modo: string; modoExamen: boolean } = {
+  palabras: [],
+  modo: 'Euskara',
+  modoExamen: false,
+};
 
   public constructor(public readonly serviceHiztegia: ServiceHiztegia) {
     effect(() => {
@@ -23,7 +27,7 @@ export class HiztegiaPraktikatu {
     });
   }
 
-  public empezarPractica(sesion: { palabras: Hitz[]; modo: string }): void {
+  public empezarPractica(sesion: { palabras: Hitz[]; modo: string; modoExamen: boolean }): void {
     this.sesionPractica = sesion;
     this.pantalla.set('practicando');
   }

@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, OnInit, Output, Vie
 import { FormsModule } from '@angular/forms';
 import { ServiceHiztegia } from '../hiztegiService';
 import { Hitz } from '../hiztegia';
-import { agruparPorEu, etiquetaIkasturtea, formatearFecha } from '../utilidades';
+import { agruparPorEu, etiquetaIkasturtea, formatearFecha, shuffle } from '../utilidades';
 
 @Component({
   imports: [FormsModule],
@@ -16,8 +16,12 @@ export class HiztegiaPraktikatuFiltros implements AfterViewInit, OnInit {
   fechaSeleccionada = 'Todos';
   palabrasFiltradas: Hitz[] = [];
   nPalabras = 0;
+  modoExamen = false;
+  nPalabrasExamen = 5;
+
+
   readonly formatearFecha = formatearFecha;
-  @Output() empezar = new EventEmitter<{ palabras: Hitz[]; modo: string }>();
+  @Output() empezar = new EventEmitter<{ palabras: Hitz[]; modo: string; modoExamen: boolean}>();
 
   @ViewChild('panelFiltros') panelFiltros!: ElementRef<HTMLElement>;
 
@@ -78,7 +82,18 @@ export class HiztegiaPraktikatuFiltros implements AfterViewInit, OnInit {
     this.nPalabras = agruparPorEu(this.palabrasFiltradas).length;
   }
 
+  get palabrasRealesExamen(): number{
+    return Math.min(this.nPalabras, Math.max(1, this.nPalabrasExamen || 10))
+  }
+
   public iniciarPractica(): void {
-    this.empezar.emit({ palabras: agruparPorEu(this.palabrasFiltradas), modo: this.modo });
+    var listaPalabras: Hitz[] = agruparPorEu(this.palabrasFiltradas)
+    
+    if (this.modoExamen) {
+    const limite = Math.min(this.nPalabras, Math.max(1, this.nPalabrasExamen || 10));
+    listaPalabras = shuffle(listaPalabras).slice(0, limite);
+  }
+
+    this.empezar.emit({ palabras: listaPalabras, modo: this.modo, modoExamen: this.modoExamen});
   }
 }

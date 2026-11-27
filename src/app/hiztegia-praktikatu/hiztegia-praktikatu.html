@@ -14,9 +14,12 @@
             }
             @case ('practicando') {
                 <app-hiztegia-praktikatu-practica
-                    [modo]="sesionPractica.modo"
-                    [palabrasAEstudiar]="sesionPractica.palabras"
-                    (reset)="reset()" />
+    [palabrasAEstudiar]="sesionPractica.palabras"
+    [modo]="sesionPractica.modo"
+    [modoExamen]="sesionPractica.modoExamen"
+    (reset)="reset()">
+</app-hiztegia-praktikatu-practica>
+
             }
         }
     </div>
